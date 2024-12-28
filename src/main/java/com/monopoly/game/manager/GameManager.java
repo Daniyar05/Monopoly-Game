@@ -1,15 +1,12 @@
 package com.monopoly.game.manager;
 
-import com.monopoly.game.model.Board;
-import com.monopoly.game.event.GameStatus;
-import com.monopoly.game.model.Player;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
+@RequiredArgsConstructor
 public class GameManager {
 
-    private BoardManager boardManager;
-    private PlayerManager playerManager;
+    private final BoardManager boardManager;
+    private final PlayerManager playerManager;
 
 //    private List<Player> players;           // Список игроков
 //    private Board board;                    // Игровое поле
