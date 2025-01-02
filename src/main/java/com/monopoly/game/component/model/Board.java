@@ -1,18 +1,24 @@
 package com.monopoly.game.component.model;
 
 import com.monopoly.game.component.area.Tile;
+import lombok.Getter;
 
 import java.util.List;
 
 public class Board {
-    private List<Tile> tiles; // Список клеток на игровом поле
+    @Getter
+    private final List<Tile> tiles;
+
+    public Board(List<Tile> tiles) {
+        this.tiles = tiles;
+    }
 
     public Tile getTile(int position) {
-        return null;
-        // Возвращает клетку по позиции
+        return tiles.get(position % tiles.size());
+
     }
 
     public void interactWithTile(Player player, int position) {
-        // Взаимодействие игрока с клеткой
+
     }
 }

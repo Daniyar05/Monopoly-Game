@@ -1,4 +1,5 @@
 package com.monopoly.game.manager;
 
-    public class EventManager {
+public class EventManager {
+
 }
