@@ -14,5 +14,7 @@ public abstract class AbstractPromissoryNote {
         return cash.getAmount();
     }
 
-    public void execute() {}
+    public void execute() {
+        System.err.println("default execute method in AbstractPromissoryNote");
+    }
 }

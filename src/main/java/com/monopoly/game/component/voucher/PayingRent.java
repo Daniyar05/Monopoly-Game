@@ -23,9 +23,9 @@ public class PayingRent extends AbstractPromissoryNote{
 
 
     public void addCashForPlayer(Player playerTo){
-        playerTo.getCash().addCash(cash);
+        playerTo.getWallet().addCash(cash);
     }
     public void subtractCashForPlayer(Player playerTo){
-        playerTo.getCash().subtractCash(cash);
+        playerTo.getWallet().subtractCash(cash);
     }
 }

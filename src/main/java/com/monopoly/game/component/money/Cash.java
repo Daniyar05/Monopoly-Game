@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Comparator;
+
 @AllArgsConstructor
 @Getter
 @Setter
-public class Cash {
+public class Cash implements Comparable<Cash> {
     private int amount;
 
     public void addCash(Cash cash){
@@ -16,5 +18,10 @@ public class Cash {
 
     public void subtractCash(Cash cash){
         amount-= cash.getAmount();
+    }
+
+    @Override
+    public int compareTo(Cash cash2) {
+        return Integer.compare(amount, cash2.amount);
     }
 }

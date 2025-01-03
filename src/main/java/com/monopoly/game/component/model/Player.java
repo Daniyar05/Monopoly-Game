@@ -1,11 +1,8 @@
 package com.monopoly.game.component.model;
 
 import com.monopoly.game.component.area.PropertyTile;
-import com.monopoly.game.component.area.StartTile;
-import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.component.voucher.AbstractPromissoryNote;
-import com.monopoly.game.component.voucher.PayingRent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,13 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 public class Player {
     private String name;
-    private Cash cash;
+    private Cash wallet;
     private int position;
     private List<PropertyTile> ownedProperties;
 
     public Player(String name, Cash cash) {
         this.name = name;
-        this.cash = cash;
+        this.wallet = cash;
         this.position = 0;
         this.ownedProperties = new ArrayList<>();
     }
@@ -53,10 +50,17 @@ public class Player {
 
     public void adjustCash(AbstractPromissoryNote promissoryNote, PropertyTile thisTile) {
         promissoryNote.setPlayerTo(this);
-        promissoryNote.setCash((thisTile).getRentAmount());
+        promissoryNote.setCash((thisTile).getRent());
         promissoryNote.execute();
     }
 
+    public void addOwnedProperties(PropertyTile propertyTile){
+        ownedProperties.add(propertyTile);
+    }
 
 
+    public boolean enoughCash(Cash cash) {
+
+        return wallet.compareTo(cash)>=0;
+    }
 }

@@ -2,7 +2,7 @@ package com.monopoly.game.manager;
 
 import com.monopoly.game.component.model.Dice;
 import com.monopoly.game.component.model.Player;
-import com.monopoly.game.util.ConfigurationGame;
+import com.monopoly.game.config.ConfigurationGame;
 import lombok.RequiredArgsConstructor;
 
 
@@ -15,7 +15,7 @@ public class GameManager {
     private final PlayerManager playerManager;
 
     public void startGame(ConfigurationGame configurationGame) {
-        boardManager.start();
+        boardManager.start(configurationGame.getTiles());
         playerManager.start(configurationGame.getPlayers());
     }
 

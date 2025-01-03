@@ -11,6 +11,6 @@ public class StartTile extends Tile{
     }
     @Override
     public void execute(Player player) {
-        player.getCash().addCash(baseCash);
+        player.getWallet().addCash(baseCash);
     }
 }

@@ -12,6 +12,10 @@ public class PlayerManager {
     private List<Player> players;
     private short indexNowPlayer=0;
 
+    public PlayerManager(List<Player> players) {
+        this.players = players;
+    }
+
     public void start(List<Player> players) {
         this.players = players;
 //        moneyManager.setPlayers(players);
@@ -32,5 +36,8 @@ public class PlayerManager {
 
     public int move(int step) {
         return nowPlayer().changePosition(step);
+    }
+    public void addPlayer(Player player){
+        players.add(player);
     }
 }
