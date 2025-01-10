@@ -20,6 +20,7 @@ public class Main {
         while (true) {
             game.move();
         }
+
     }
 
 

@@ -1,8 +1,8 @@
 package com.monopoly.game.component.model;
 
-import com.monopoly.game.component.area.PropertyTile;
 import com.monopoly.game.component.card.AbstractCard;
 import com.monopoly.game.component.money.Cash;
+import com.monopoly.game.component.area.PropertyTile;
 import com.monopoly.game.component.voucher.AbstractPromissoryNote;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,11 +1,8 @@
 package com.monopoly.game.manager;
 
-import com.monopoly.game.component.area.PropertyTile;
-import com.monopoly.game.component.area.StartTile;
 import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.component.model.Board;
 import com.monopoly.game.component.model.Player;
-import com.monopoly.game.component.voucher.PayingRent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,7 +1,7 @@
 package com.monopoly.game;
 
-import com.monopoly.game.manager.*;
 import com.monopoly.game.config.ConfigurationGame;
+import com.monopoly.game.manager.*;
 
 public class Game {
     private final GameManager gameManager;

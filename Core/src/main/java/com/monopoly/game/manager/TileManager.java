@@ -1,10 +1,11 @@
 package com.monopoly.game.manager;
 
-import com.monopoly.game.component.area.*;
+import com.monopoly.game.component.area.PropertyTile;
+import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.component.model.EventEnum;
 import com.monopoly.game.component.model.Player;
-import com.monopoly.game.component.voucher.BuyingProperty;
 import com.monopoly.game.component.voucher.PayingRent;
+import com.monopoly.game.component.voucher.BuyingProperty;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

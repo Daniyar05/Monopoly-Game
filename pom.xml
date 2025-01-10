@@ -22,7 +22,11 @@
     </properties>
     <dependencyManagement>
         <dependencies>
-
+            <dependency>
+                <groupId>com.monopoly.game</groupId>
+                <artifactId>Core</artifactId>
+                <version>1.0</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
