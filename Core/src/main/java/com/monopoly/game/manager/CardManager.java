@@ -18,7 +18,7 @@ public class CardManager{
         this.communityChestCardList = communityChestCardList;
     }
 
-    public void execute(EventManager eventManager, BoardManager boardManager, PlayerManager playerManager, Player targetPlayer, TypeCard typeCard){
+    public void execute(EventManagerConsole eventManager, BoardManager boardManager, PlayerManager playerManager, Player targetPlayer, TypeCard typeCard){
 
         if (TypeCard.CHANCE_CARD.equals(typeCard)){
             ChanceCard card = chanceCardList.poll();

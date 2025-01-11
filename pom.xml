@@ -12,6 +12,7 @@
     <modules>
         <module>Core</module>
         <module>Graphics</module>
+        <module>Server</module>
     </modules>
 
     <properties>

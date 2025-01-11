@@ -1,7 +1,9 @@
 package com.monopoly.game.component.area;
 
 import com.monopoly.game.component.model.Player;
+import lombok.Getter;
 
+@Getter
 public abstract class Tile {
     protected int position;
     protected String name;

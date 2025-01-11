@@ -4,6 +4,7 @@ import com.monopoly.game.component.model.Player;
 import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.config.TileConfigurator;
+import com.monopoly.game.manager.EventManagerConsole;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class Main {
         Game game = new Game(ConfigurationGame.builder()
                 .players(List.of(player1, player2))
                 .tiles(TileConfigurator.configureTiles())
-                .build());
+                .build(), new EventManagerConsole());
         game.start();
         while (true) {
             game.move();

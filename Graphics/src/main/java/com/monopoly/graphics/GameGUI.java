@@ -12,8 +12,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class MonopolyBoard extends Application {
-
+public class GameGUI extends Application {
     private static final int TILE_SIZE = 100; // Размер одной клетки
     private static final int BOARD_SIZE = 8; // Количество клеток на стороне
     private static final int WINDOW_SIZE = 800; // Фиксированный размер окна
@@ -40,4 +39,5 @@ public class MonopolyBoard extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
