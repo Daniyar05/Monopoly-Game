@@ -4,4 +4,5 @@ module com.monopoly.server {
     requires javafx.controls;
     requires javafx.base;
     requires com.monopoly.core;
+    exports com.monopoly.server;
 }
