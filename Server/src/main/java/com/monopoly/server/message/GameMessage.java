@@ -1,6 +1,6 @@
 package com.monopoly.server.message;
 
-public record GameMessage(MessageType type, String sender, String content) {
+public record GameMessage(Object type, String sender, String content) {
 
     @Override
     public String toString() {
@@ -9,10 +9,22 @@ public record GameMessage(MessageType type, String sender, String content) {
 
     public static GameMessage fromString(String message) {
         String[] parts = message.split("\\|", 3);
+        String typeName = parts[0];
+        Object type = determineType(typeName);
+
         return new GameMessage(
-                MessageType.valueOf(parts[0]),
+                type,
                 parts[1],
                 parts[2]
         );
+    }
+
+    private static Object determineType(String typeName) {
+        // Определяем тип сообщения
+        try {
+            return PreparationMessageType.valueOf(typeName);
+        } catch (IllegalArgumentException e) {
+            return MessageType.valueOf(typeName);
+        }
     }
 }

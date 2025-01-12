@@ -3,6 +3,9 @@ package com.monopoly.server.services;
 import com.monopoly.game.Game;
 import com.monopoly.graphics.GameGUI;
 import com.monopoly.server.message.GameManagerServer;
+import com.monopoly.server.message.GameMessage;
+import com.monopoly.server.message.MessageType;
+import com.monopoly.server.message.PreparationMessageType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
@@ -20,8 +23,8 @@ public class ChatClientService implements Runnable {
     private final PrintWriter out;
     private final BufferedReader in;
     private final String nickname;
+    private final Stage primaryStage;
     private Game game;
-    private final Stage primaryStage; // Stage для текущего окна
 
     public ChatClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
@@ -29,20 +32,20 @@ public class ChatClientService implements Runnable {
             this.nickname = nickname;
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.primaryStage=primaryStage;
+            this.primaryStage = primaryStage;
         } catch (IOException e) {
             throw new RuntimeException("Ошибка подключения к серверу: " + e.getMessage(), e);
         }
     }
 
-    public void sendCommand(String command) {
-        out.println(nickname + ": " + command);
+    public void sendCommand(GameMessage message) {
+        out.println(message.toString());
     }
 
     @Override
     public void run() {
         try {
-            sendCommand("JOIN:" + nickname); // Сообщаем серверу имя игрока
+            sendCommand(new GameMessage(PreparationMessageType.PLAYER_JOIN, nickname, ""));
             String serverResponse;
             while ((serverResponse = in.readLine()) != null) {
                 processServerMessage(serverResponse);
@@ -59,33 +62,33 @@ public class ChatClientService implements Runnable {
     }
 
     private void processServerMessage(String message) {
-        if (message.equals("ALL_PLAYERS_READY")) {
+        GameMessage gameMessage = GameMessage.fromString(message);
+
+        if (gameMessage.type() == PreparationMessageType.ALL_PLAYERS_READY) {
             System.out.println("Все игроки готовы! Ожидайте начала игры.");
-        } else if (message.contains("START_GAME:")) {
+        } else if (gameMessage.type() == PreparationMessageType.GAME_START) {
+            System.out.println(gameMessage.sender());
             closeWaitingRoom();
-            String playerNames = message.substring(11); // Получаем список имён игроков
-            System.out.println("Players - "+playerNames+" message - "+message);
-            startGame(playerNames.split(","));
-//            System.out.println("Игра начинается!");
-//            Platform.runLater(() -> {
-//                GameGUI gameGUI = new GameGUI();
-//                gameGUI.start(new Stage());
-//            });
+//            String[] playerNames = gameMessage.content().split(",");
+            startGame();
+        } else {
+            System.err.println("Неизвестное сообщение от сервера: " + message);
         }
     }
-    private void startGame(String[] playerNames) {
+
+    private void startGame() {
         Platform.runLater(() -> {
-            List<String> names = Arrays.asList(playerNames);
-            GameManagerServer gameManagerServer = new GameManagerServer(names);
-            Game game = gameManagerServer.getGame();
+//            List<String> names = Arrays.asList(playerName);
+//            GameManagerServer gameManagerServer = new GameManagerServer(names);
+//            this.game = gameManagerServer.getGame();
+
             GameGUI gameGUI = new GameGUI(game, nickname);
             gameGUI.start(new Stage());
         });
     }
+
     private void closeWaitingRoom() {
-        Platform.runLater(() -> {
-            // Закрыть текущий экран (WaitingRoom)
-            primaryStage.close();
-        });
+        System.out.println("closable");
+        Platform.runLater(primaryStage::close);
     }
 }

@@ -1,9 +1,8 @@
 package com.monopoly.server;
 
-import com.monopoly.game.Game;
-import com.monopoly.game.manager.GameManager;
 import com.monopoly.graphics.GameGUI;
 import com.monopoly.server.message.GameManagerServer;
+import com.monopoly.server.message.GameMessage;
 import com.monopoly.server.process.WaitingRoom;
 import com.monopoly.server.services.ChatClientService;
 import com.monopoly.server.services.ChatServerService;
@@ -13,111 +12,82 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Main extends Application {
-    private Game game;
-
 
     @Override
     public void start(Stage primaryStage) {
-
         String nickname = showInputDialog("Введите ваше имя:", "Имя");
         if (nickname == null || nickname.isBlank()) {
             showError("Имя не может быть пустым. Программа завершена.");
             return;
         }
-        GameManagerServer gameManagerServer = new GameManagerServer();
 
         boolean isHost = showConfirmDialog("Вы хотите стать хостом?", "Роль в игре");
-
-
+        GameManagerServer gameManagerServer = new GameManagerServer();
 
         if (isHost) {
-            ChatServerService chatServerService = new ChatServerService(1234);
-            new Thread(chatServerService).start();
-            Stage stage = new Stage();
-            ChatClientService clientService = new ChatClientService("127.0.0.1", 1234, nickname, stage);
-            new Thread(clientService).start();
-
-            gameManagerServer.addPlayer(nickname);
-            WaitingRoom waitingRoom = new WaitingRoom(
-                    isHost,
-                    ready -> {
-                        // Обновляем статус готовности игроков
-                        System.out.println("Игрок изменил статус готовности: " + ready);
-                        // Здесь можно проверить общее состояние готовности
-                    },
-                    () -> {
-                        // Логика старта игры
-                        Platform.runLater(() -> {
-//                            waitingRoom.close(); // Закрываем комнату ожидания
-
-                            // Создаём общий экземпляр Game
-                            Game game = gameManagerServer.getGame(); // Пример
-
-                            // Запускаем GameGUI для текущего игрока
-                            GameGUI gameGUI = new GameGUI(game, nickname);
-                            try {
-                                gameGUI.start(new Stage());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });                    },
-                    nickname,
-                    command -> clientService.sendCommand(command) // Используем клиент для отправки команды
-            );
-            waitingRoom.start(stage); // Передаём новый Stage для комнаты ожидания
-
-
-
-
-            // TODO добавьте логику запуска окна для игрв
+            initializeHost(primaryStage, nickname, gameManagerServer);
         } else {
-            String hostIp = showInputDialog("Введите IP хоста:", "IP Адрес");
-            if (hostIp == null || hostIp.isBlank()) {
-                showError("IP адрес не может быть пустым. Программа завершена.");
-                return;
-            }
-            Stage stage = new Stage();
-
-            ChatClientService clientService = new ChatClientService(hostIp, 1234, nickname,stage);
-            new Thread(clientService).start();
-
-            gameManagerServer.addPlayer(nickname);
-
-            WaitingRoom waitingRoom = new WaitingRoom(
-                    isHost,
-                    ready -> {
-                        // Обновляем статус готовности игроков
-                        System.out.println("Игрок изменил статус готовности: " + ready);
-                        // Здесь можно проверить общее состояние готовности
-                    },
-                    () -> {
-                        // Логика старта игры
-                        Platform.runLater(() -> {
-//                            waitingRoom.close(); // Закрываем комнату ожидания
-
-                            // Создаём общий экземпляр Game
-                            Game game = gameManagerServer.getGame(); // Пример
-
-                            // Запускаем GameGUI для текущего игрока
-                            GameGUI gameGUI = new GameGUI(game, nickname);
-                            try {
-                                gameGUI.start(new Stage());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    },
-                    nickname,
-                    command -> clientService.sendCommand(command) // Используем клиент для отправки команды
-            );
-            waitingRoom.start(stage); // Передаём новый Stage для комнаты ожидания
-
-            // TODO добавьте логику запуска окна для игрв
+            initializeClient(primaryStage, nickname, gameManagerServer);
         }
+    }
+
+    private void initializeHost(Stage primaryStage, String nickname, GameManagerServer gameManagerServer) {
+        ChatServerService chatServerService = new ChatServerService(1234);
+        new Thread(chatServerService).start();
+
+        Stage waitingRoomStage = new Stage();
+        ChatClientService clientService = new ChatClientService("127.0.0.1", 1234, nickname, waitingRoomStage);
+        new Thread(clientService).start();
+
+        gameManagerServer.addPlayer(nickname);
+
+        WaitingRoom waitingRoom = new WaitingRoom(
+                true,
+                ready -> System.out.println("Игрок изменил статус готовности: " + ready),
+                () -> startGame(gameManagerServer, nickname),
+                nickname,
+                clientService::sendCommand
+        );
+
+        waitingRoom.start(waitingRoomStage);
+    }
+
+    private void initializeClient(Stage primaryStage, String nickname, GameManagerServer gameManagerServer) {
+        String hostIp = showInputDialog("Введите IP хоста:", "IP Адрес");
+        if (hostIp == null || hostIp.isBlank()) {
+            hostIp="127.0.0.1";
+//            showError("IP адрес не может быть пустым. Программа завершена.");
+//            return;
+        }
+
+        Stage waitingRoomStage = new Stage();
+        ChatClientService clientService = new ChatClientService(hostIp, 1234, nickname, waitingRoomStage);
+        new Thread(clientService).start();
+
+        gameManagerServer.addPlayer(nickname);
+
+        WaitingRoom waitingRoom = new WaitingRoom(
+                false,
+                ready -> System.out.println("Игрок изменил статус готовности: " + ready),
+                () -> startGame(gameManagerServer, nickname),
+                nickname,
+                command -> clientService.sendCommand(command)
+        );
+
+        waitingRoom.start(waitingRoomStage);
+    }
+
+    private void startGame(GameManagerServer gameManagerServer, String nickname) {
+        Platform.runLater(() -> {
+            System.out.println("created startGame - "+nickname);
+            GameGUI gameGUI = new GameGUI(gameManagerServer.getGame(), nickname);
+            try {
+                gameGUI.start(new Stage());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private String showInputDialog(String message, String title) {

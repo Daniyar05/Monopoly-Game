@@ -1,5 +1,9 @@
 package com.monopoly.server.services;
 
+import com.monopoly.server.message.GameMessage;
+import com.monopoly.server.message.MessageType;
+import com.monopoly.server.message.PreparationMessageType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +22,10 @@ public class ChatServerService implements Runnable {
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
 
     private static final List<String> playerNames = new CopyOnWriteArrayList<>();
-    public static List<String> getPlayerNames(){return playerNames;}
+
+    public static List<String> getPlayerNames() {
+        return playerNames;
+    }
 
     public ChatServerService(int port) {
         try {
@@ -27,16 +34,18 @@ public class ChatServerService implements Runnable {
             throw new RuntimeException("Не удалось открыть серверный сокет на порту " + port, e);
         }
     }
+
     public void setPlayerReady(String player, boolean isReady) {
         playerReadyStatus.put(player, isReady);
         checkAllPlayersReady();
     }
+
     private static void checkAllPlayersReady() {
         if (playerReadyStatus.values().stream().allMatch(ready -> ready)) {
-            broadcast("ALL_PLAYERS_READY");
-//            broadcast("START_GAME:" + String.join(",", playerNames)); // Отправляем список имён
+            broadcast(new GameMessage(PreparationMessageType.ALL_PLAYERS_READY, "Server", "").toString());
         }
     }
+
     @Override
     public void run() {
         System.out.println("Сервер запущен и ожидает подключения...");
@@ -79,7 +88,6 @@ public class ChatServerService implements Runnable {
                 String clientMessage;
                 while ((clientMessage = in.readLine()) != null) {
                     System.out.println("Получено от клиента: " + clientMessage);
-                    // Обработка команд клиента
                     handleClientCommand(clientMessage);
                 }
             } catch (IOException e) {
@@ -94,24 +102,36 @@ public class ChatServerService implements Runnable {
         }
 
         private void handleClientCommand(String command) {
-            if (command.contains("JOIN:")) {
-                String[] parts = command.split(":");
-                String playerName = parts[2];
+            GameMessage message = GameMessage.fromString(command);
 
-                playerNames.add(playerName);
-                playerReadyStatus.put(playerName, false);
-                System.out.println("Игрок присоединился: " + playerName);
-            } else if (command.contains("READY:")) {
-                String[] parts = command.split(":");
-                String playerName = parts[2];
-                boolean isReady = Boolean.parseBoolean(parts[3]);
-                playerReadyStatus.put(playerName, isReady);
-                checkAllPlayersReady();
-            } else if (command.contains("START_GAME:")) {
-                System.out.println("Получена команда START_GAME");
-                broadcast("START_GAME:"); // Отправляем всем клиентам команду на запуск игры
+            if (message.type() instanceof PreparationMessageType prepType) {
+                switch (prepType) {
+                    case READY_STATUS -> {
+                        String contentParts = message.content();
+                        String playerName = message.sender();
+                        boolean isReady = Boolean.parseBoolean(contentParts);
+                        playerReadyStatus.put(playerName, isReady);
+                        if (!playerNames.contains(playerName)) {
+                            playerNames.add(playerName);
+                        }
+                        checkAllPlayersReady();
+                    }
+                    case ALL_PLAYERS_READY -> {
+                        System.out.println("Все игроки готовы!");
+                    }
+                    case GAME_START -> {
+                        System.out.println("Начинаем игру!");
+                        broadcast(new GameMessage(PreparationMessageType.GAME_START, "Server", String.join(",", getPlayerNames())).toString());
+                    }
+                }
+            } else if (message.type() instanceof MessageType gameType) {
+                switch (gameType) {
+                    case PLAYER_MOVE -> {
+                        System.out.println("Ход игрока: " + message.content());
+                    }
+                }
             } else {
-                System.err.println("Не обрабатываемая команда"+command);
+                System.err.println("Неизвестный тип сообщения: " + message.type());
             }
         }
 

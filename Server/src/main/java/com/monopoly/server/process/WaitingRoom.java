@@ -1,5 +1,7 @@
 package com.monopoly.server.process;
 
+import com.monopoly.server.message.GameMessage;
+import com.monopoly.server.message.PreparationMessageType;
 import com.monopoly.server.services.ChatClientService;
 import com.monopoly.server.services.ChatServerService;
 import javafx.application.Platform;
@@ -22,10 +24,10 @@ public class WaitingRoom {
     private Consumer<Boolean> onReadyChanged;
     private final Runnable onStartGame;
     private final String nickname;
-    private final Consumer<String> clientServiceCommandSender;
+    private final Consumer<GameMessage> clientServiceCommandSender;
 
     public WaitingRoom(boolean isHost, Consumer<Boolean> onReadyChanged, Runnable onStartGame,
-                       String nickname, Consumer<String> clientServiceCommandSender) {
+                       String nickname, Consumer<GameMessage> clientServiceCommandSender) {
         this.isHost = isHost;
         this.onReadyChanged = onReadyChanged;
         this.onStartGame = onStartGame;
@@ -84,17 +86,28 @@ public class WaitingRoom {
     }
 
     private void sendReadyStatus(boolean ready) {
-        String command = "READY:" + nickname + ":" + ready;
-        clientServiceCommandSender.accept(command);
+//        String command = "READY:" + nickname + ":" + ready;
+
+        clientServiceCommandSender.accept(
+                new GameMessage(
+                        PreparationMessageType.READY_STATUS,
+                        nickname,
+                        String.valueOf(ready)
+                )
+        );
         System.out.println("Статус готовности отправлен: " + (ready ? "Готов" : "Не готов"));
     }
 
     private void sendStartGameCommand() {
         // Отправляем команду всем игрокам о старте игры
 //        for (String playerName : getPlayerNames()) {
-            String command = "START_GAME:";// + playerName;
-            clientServiceCommandSender.accept(command); // Отправляем команду каждому игроку
-            System.out.println("Команда старт игры отправлена серверу " );//+ playerName);
+//        String command = "START_GAME:";// + playerName;
+        clientServiceCommandSender.accept(new GameMessage(
+                PreparationMessageType.GAME_START,
+                nickname,
+                ""
+        )); // Отправляем команду каждому игроку
+        System.out.println("Команда старт игры отправлена серверу " );//+ playerName);
 //        }
     }
 
