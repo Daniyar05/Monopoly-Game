@@ -2,10 +2,9 @@ package com.monopoly.server;
 
 import com.monopoly.graphics.GameGUI;
 import com.monopoly.server.message.GameManagerServer;
-import com.monopoly.server.message.GameMessage;
 import com.monopoly.server.process.WaitingRoom;
-import com.monopoly.server.services.ChatClientService;
-import com.monopoly.server.services.ChatServerService;
+import com.monopoly.server.services.ClientService;
+import com.monopoly.server.services.ServerService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -33,11 +32,11 @@ public class Main extends Application {
     }
 
     private void initializeHost(Stage primaryStage, String nickname, GameManagerServer gameManagerServer) {
-        ChatServerService chatServerService = new ChatServerService(1234);
-        new Thread(chatServerService).start();
+        ServerService serverService = new ServerService(1234);
+        new Thread(serverService).start();
 
         Stage waitingRoomStage = new Stage();
-        ChatClientService clientService = new ChatClientService("127.0.0.1", 1234, nickname, waitingRoomStage);
+        ClientService clientService = new ClientService("127.0.0.1", 1234, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
         gameManagerServer.addPlayer(nickname);
@@ -62,7 +61,7 @@ public class Main extends Application {
         }
 
         Stage waitingRoomStage = new Stage();
-        ChatClientService clientService = new ChatClientService(hostIp, 1234, nickname, waitingRoomStage);
+        ClientService clientService = new ClientService(hostIp, 1234, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
         gameManagerServer.addPlayer(nickname);

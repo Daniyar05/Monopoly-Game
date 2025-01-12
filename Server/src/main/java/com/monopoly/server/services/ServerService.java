@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ChatServerService implements Runnable {
+public class ServerService implements Runnable {
 
     private final ServerSocket serverSocket;
     private static final Map<String, Boolean> playerReadyStatus = new HashMap<>();
@@ -27,7 +27,7 @@ public class ChatServerService implements Runnable {
         return playerNames;
     }
 
-    public ChatServerService(int port) {
+    public ServerService(int port) {
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException e) {

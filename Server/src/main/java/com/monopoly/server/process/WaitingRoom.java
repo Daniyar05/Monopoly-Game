@@ -2,8 +2,6 @@ package com.monopoly.server.process;
 
 import com.monopoly.server.message.GameMessage;
 import com.monopoly.server.message.PreparationMessageType;
-import com.monopoly.server.services.ChatClientService;
-import com.monopoly.server.services.ChatServerService;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,8 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.function.Consumer;
-
-import static com.monopoly.server.services.ChatServerService.getPlayerNames;
 
 public class WaitingRoom {
     private Stage stage;

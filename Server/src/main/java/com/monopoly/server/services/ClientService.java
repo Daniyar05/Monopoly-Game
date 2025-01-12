@@ -2,9 +2,7 @@ package com.monopoly.server.services;
 
 import com.monopoly.game.Game;
 import com.monopoly.graphics.GameGUI;
-import com.monopoly.server.message.GameManagerServer;
 import com.monopoly.server.message.GameMessage;
-import com.monopoly.server.message.MessageType;
 import com.monopoly.server.message.PreparationMessageType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -14,10 +12,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.List;
 
-public class ChatClientService implements Runnable {
+public class ClientService implements Runnable {
 
     private final Socket socket;
     private final PrintWriter out;
@@ -26,7 +22,7 @@ public class ChatClientService implements Runnable {
     private final Stage primaryStage;
     private Game game;
 
-    public ChatClientService(String host, int port, String nickname, Stage primaryStage) {
+    public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
             this.socket = new Socket(host, port);
             this.nickname = nickname;

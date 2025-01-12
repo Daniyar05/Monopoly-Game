@@ -3,10 +3,6 @@ package com.monopoly.server.message;
 import com.monopoly.game.Game;
 import com.monopoly.game.component.model.Player;
 import com.monopoly.game.component.money.Cash;
-import com.monopoly.game.config.ConfigurationGame;
-import com.monopoly.game.config.TileConfigurator;
-import com.monopoly.graphics.rendering.EventManagerGUI;
-import com.monopoly.server.services.ChatServerService;
 
 import java.util.ArrayList;
 import java.util.List;
