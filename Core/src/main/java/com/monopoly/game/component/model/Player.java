@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class Player {
+
     private String name;
     private Cash wallet;
     private int position;

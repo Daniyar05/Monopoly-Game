@@ -1,6 +1,8 @@
 package com.monopoly.server.process;
 
-import javafx.application.Application;
+import com.monopoly.server.services.ChatClientService;
+import com.monopoly.server.services.ChatServerService;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,14 +11,30 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
-public class WaitingRoom extends Application {
+import static com.monopoly.server.services.ChatServerService.getPlayerNames;
 
-    private final AtomicBoolean isReady = new AtomicBoolean(false);
+public class WaitingRoom {
+    private Stage stage;
+    private boolean isReady = false;
+    private final boolean isHost;
+    private Consumer<Boolean> onReadyChanged;
+    private final Runnable onStartGame;
+    private final String nickname;
+    private final Consumer<String> clientServiceCommandSender;
 
-    @Override
+    public WaitingRoom(boolean isHost, Consumer<Boolean> onReadyChanged, Runnable onStartGame,
+                       String nickname, Consumer<String> clientServiceCommandSender) {
+        this.isHost = isHost;
+        this.onReadyChanged = onReadyChanged;
+        this.onStartGame = onStartGame;
+        this.nickname = nickname;
+        this.clientServiceCommandSender = clientServiceCommandSender;
+    }
+
     public void start(Stage stage) {
+        this.stage=stage;
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
 
@@ -25,16 +43,18 @@ public class WaitingRoom extends Application {
 
         Button readyButton = new Button("Готов");
         readyButton.setOnAction(e -> {
-            isReady.set(true);
+            isReady = true;
             statusLabel.setText("Ваш статус: Готов");
-            sendReadyStatus(true); // Отправка статуса готовности
+            onReadyChanged.accept(true);
+            sendReadyStatus(true);
         });
 
         Button notReadyButton = new Button("Не готов");
         notReadyButton.setOnAction(e -> {
-            isReady.set(false);
+            isReady = false;
             statusLabel.setText("Ваш статус: Не готов");
-            sendReadyStatus(false); // Отправка статуса готовности
+            onReadyChanged.accept(false);
+            sendReadyStatus(false);
         });
 
         HBox buttonBox = new HBox(10, readyButton, notReadyButton);
@@ -42,18 +62,46 @@ public class WaitingRoom extends Application {
 
         root.getChildren().addAll(title, statusLabel, buttonBox);
 
+        if (isHost) {
+            Button startGameButton = new Button("Начать игру");
+            startGameButton.setDisable(true); // Изначально отключена
+            startGameButton.setOnAction(e -> {
+                System.out.println("Игра началась");
+                sendStartGameCommand(); // Отправляем команду всем игрокам
+//                onStartGame.run();
+            });
+            root.getChildren().add(startGameButton);
+
+            // Активировать кнопку при готовности всех игроков
+            onReadyChanged = ready -> Platform.runLater(() -> startGameButton.setDisable(!ready));
+        }
+
         Scene scene = new Scene(root, 400, 200);
         stage.setScene(scene);
-        stage.setTitle("Ожидание игроков");
+        stage.setTitle("Комната ожидания");
         stage.show();
+
     }
 
     private void sendReadyStatus(boolean ready) {
-        // Логика отправки статуса на сервер
+        String command = "READY:" + nickname + ":" + ready;
+        clientServiceCommandSender.accept(command);
         System.out.println("Статус готовности отправлен: " + (ready ? "Готов" : "Не готов"));
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void sendStartGameCommand() {
+        // Отправляем команду всем игрокам о старте игры
+//        for (String playerName : getPlayerNames()) {
+            String command = "START_GAME:";// + playerName;
+            clientServiceCommandSender.accept(command); // Отправляем команду каждому игроку
+            System.out.println("Команда старт игры отправлена серверу " );//+ playerName);
+//        }
     }
+
+    public void close(){
+        Platform.runLater(() -> {
+            if (stage != null) {
+                stage.close();
+            }
+        });    }
 }

@@ -18,19 +18,25 @@ public class GameGUI extends Application {
     private static final int WINDOW_SIZE = 800; // Фиксированный размер окна
     private static final int PLAYER_POSITION = 0; // Пример позиции игрока
 
+    private final Game game;
+    private final String playerName;
+
+    public GameGUI(Game game, String playerName) {
+        this.game=game;
+        this.playerName=playerName;
+    }
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage stage)  {
 
-        Player player1 = new Player("First Player", new Cash(1500));
-        Player player2 = new Player("Second Player", new Cash(1500));
-        Game game = new Game(ConfigurationGame.builder()
-                .players(List.of(player1, player2))
-                .tiles(TileConfigurator.configureTiles())
-                .build(),
-                new EventManagerGUI());
-        game.start();
+//        Player player1 = new Player("First Player", new Cash(1500));
+//        Player player2 = new Player("Second Player", new Cash(1500));
+//        Game game = new Game(ConfigurationGame.builder()
+//                .players(List.of(player1, player2))
+//                .tiles(TileConfigurator.configureTiles())
+//                .build(),
+//                new EventManagerGUI());
 
-        WindowSettings windowSettings = new WindowSettings(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, primaryStage, game);
+        WindowSettings windowSettings = new WindowSettings(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, stage, game);
 
 //        windowSettings.update(primaryStage);
     }

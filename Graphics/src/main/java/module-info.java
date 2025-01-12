@@ -14,6 +14,6 @@ module com.monopoly.graphics {
     requires com.monopoly.core;
     exports com.monopoly.graphics;
 //    exports com.monopoly.graphics to javafx.graphics;
-    exports com.monopoly.graphics.rendering to javafx.graphics;
+    exports com.monopoly.graphics.rendering to javafx.graphics, com.monopoly.server;
     opens com.monopoly.graphics to javafx.fxml;
 }
