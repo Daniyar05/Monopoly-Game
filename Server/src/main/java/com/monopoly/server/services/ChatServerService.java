@@ -38,7 +38,6 @@ public class ChatServerService implements Runnable {
     }
 
     public static void broadcast(String message) {
-        // Рассылка сообщения всем клиентам
         for (ClientHandler client : clients) {
             client.sendMessage(message);
         }
@@ -80,7 +79,6 @@ public class ChatServerService implements Runnable {
         }
 
         private void handleClientCommand(String command) {
-            // Здесь обрабатываются команды клиента
             System.out.println("Обрабатывается команда: " + command);
             broadcast("Ответ на команду: " + command);
         }

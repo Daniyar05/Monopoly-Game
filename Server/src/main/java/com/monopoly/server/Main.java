@@ -1,5 +1,8 @@
 package com.monopoly.server;
 
+import com.monopoly.game.Game;
+import com.monopoly.graphics.GameGUI;
+import com.monopoly.server.process.WaitingRoom;
 import com.monopoly.server.services.ChatClientService;
 import com.monopoly.server.services.ChatServerService;
 import javafx.application.Application;
@@ -8,6 +11,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+    Game game;
 
     @Override
     public void start(Stage primaryStage) {
@@ -24,22 +28,26 @@ public class Main extends Application {
             ChatServerService chatServerService = new ChatServerService(12345);
             new Thread(chatServerService).start();
 
+            WaitingRoom.launch();
+
             ChatClientService clientService = new ChatClientService("127.0.0.1", 12345, nickname);
             new Thread(clientService).start();
 
-            // Здесь добавьте логику запуска окна для чата
+
+            // TODO добавьте логику запуска окна для игрв
         } else {
-            // Если клиент, ввод IP-адреса
             String hostIp = showInputDialog("Введите IP хоста:", "IP Адрес");
             if (hostIp == null || hostIp.isBlank()) {
                 showError("IP адрес не может быть пустым. Программа завершена.");
                 return;
             }
 
+            WaitingRoom.launch();
+
             ChatClientService clientService = new ChatClientService(hostIp, 12345, nickname);
             new Thread(clientService).start();
 
-            // Здесь добавьте логику запуска окна для чата
+            // TODO добавьте логику запуска окна для игрв
         }
     }
 

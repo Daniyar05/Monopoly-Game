@@ -25,7 +25,6 @@ public class ChatClientService implements Runnable {
     }
 
     public void sendCommand(String command) {
-        // Отправка команды на сервер
         out.println(nickname + ": " + command);
     }
 

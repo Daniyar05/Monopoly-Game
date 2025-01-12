@@ -10,6 +10,7 @@ import lombok.Setter;
 public class Cash implements Comparable<Cash> {
     private int amount;
 
+
     public void addCash(Cash cash){
         amount+=cash.getAmount();
     }
