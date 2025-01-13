@@ -1,6 +1,6 @@
 package com.monopoly.server.services;
 
-import com.monopoly.server.Main;
+import com.monopoly.server.message.GameManagerServer;
 import com.monopoly.server.message.GameMessage;
 import com.monopoly.server.message.MessageType;
 import com.monopoly.server.message.PreparationMessageType;
@@ -16,9 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.monopoly.server.Main.getGameManagerServer;
+
 public class ServerService implements Runnable {
 
     private final ServerSocket serverSocket;
+//    private final GameManagerServer gameManagerServer;
     private static final Map<String, Boolean> playerReadyStatus = new HashMap<>();
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
 
@@ -122,6 +125,7 @@ public class ServerService implements Runnable {
                     }
                     case GAME_START -> {
                         System.out.println("Начинаем игру!");
+                        getGameManagerServer().startGame();
                         broadcast(new GameMessage(PreparationMessageType.GAME_START, "Server", String.join(",", getPlayerNames())).toString());
                     }
                     case PLAYER_JOIN -> {

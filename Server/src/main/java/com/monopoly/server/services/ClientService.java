@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import static com.monopoly.server.Main.getGameManagerServer;
 
 public class ClientService implements Runnable {
 
@@ -24,7 +23,6 @@ public class ClientService implements Runnable {
     private final BufferedReader in;
     private final String nickname;
     private final Stage primaryStage;
-    private Game game;
 
     public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
@@ -86,12 +84,9 @@ public class ClientService implements Runnable {
 //            GameManagerServer gameManagerServer = new GameManagerServer(names);
 //            this.game = gameManagerServer.getGame();
             //TODO разные экземпляры Game
-            Main.getGameManagerServer().startGame();
+//            Main.getGameManagerServer().startGame();
 
-            this.game = getGameManagerServer().getGame();
-            System.out.println("Добавлена game: " + game);
-
-            GameGUI gameGUI = new GameGUI(game, nickname);
+            GameGUI gameGUI = new GameGUI(nickname);
             gameGUI.start(new Stage());
         });
     }

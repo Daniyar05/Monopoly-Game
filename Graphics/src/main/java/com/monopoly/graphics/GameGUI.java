@@ -6,6 +6,7 @@ import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.config.TileConfigurator;
 import com.monopoly.graphics.rendering.EventManagerGUI;
+import com.monopoly.graphics.rendering.WindowSettingForGUI;
 import com.monopoly.graphics.rendering.WindowSettings;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -18,11 +19,9 @@ public class GameGUI extends Application {
     private static final int WINDOW_SIZE = 800; // Фиксированный размер окна
     private static final int PLAYER_POSITION = 0; // Пример позиции игрока
 
-    private final Game game;
     private final String playerName;
 
-    public GameGUI(Game game, String playerName) {
-        this.game=game;
+    public GameGUI(String playerName) {
         this.playerName=playerName;
     }
     @Override
@@ -36,7 +35,7 @@ public class GameGUI extends Application {
 //                .build(),
 //                new EventManagerGUI());
 
-        WindowSettings windowSettings = new WindowSettings(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, stage, game);
+        WindowSettingForGUI windowSettings = new WindowSettingForGUI(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, stage);
 
 //        windowSettings.update(primaryStage);
     }

@@ -49,7 +49,9 @@ public class Main extends Application {
         WaitingRoom waitingRoom = new WaitingRoom(
                 true,
                 ready -> System.out.println("Игрок изменил статус готовности: " + ready),
-                () -> startGame(gameManagerServer, nickname),
+                ()->toString(),
+
+//                () -> startGame(gameManagerServer, nickname),
                 nickname,
                 clientService::sendCommand
         );
@@ -74,7 +76,8 @@ public class Main extends Application {
         WaitingRoom waitingRoom = new WaitingRoom(
                 false,
                 ready -> System.out.println("Игрок изменил статус готовности: " + ready),
-                () -> startGame(gameManagerServer, nickname),
+//                () -> startGame(gameManagerServer, nickname),
+                ()->toString(),
                 nickname,
                 command -> clientService.sendCommand(command)
         );
@@ -82,17 +85,17 @@ public class Main extends Application {
         waitingRoom.start(waitingRoomStage);
     }
 
-    private void startGame(GameManagerServer gameManagerServer, String nickname) {
-        Platform.runLater(() -> {
-            System.out.println("created startGame - "+nickname);
-            GameGUI gameGUI = new GameGUI(gameManagerServer.getGame(), nickname);
-            try {
-                gameGUI.start(new Stage());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
+//    private void startGame(GameManagerServer gameManagerServer, String nickname) {
+//        Platform.runLater(() -> {
+//            System.out.println("created startGame - "+nickname);
+//            GameGUI gameGUI = new GameGUI(gameManagerServer.getGame(), nickname);
+//            try {
+//                gameGUI.start(new Stage());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 
     private String showInputDialog(String message, String title) {
         TextInputDialog dialog = new TextInputDialog();
