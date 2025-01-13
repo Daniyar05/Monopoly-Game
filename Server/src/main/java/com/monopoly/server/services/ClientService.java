@@ -70,7 +70,6 @@ public class ClientService implements Runnable {
                 }
             });
         } else if (gameMessage.type() == PreparationMessageType.GAME_START) {
-            System.out.println(gameMessage.sender());
             closeWaitingRoom();
             startGame();
         } else {
@@ -80,9 +79,6 @@ public class ClientService implements Runnable {
 
     private void startGame() {
         Platform.runLater(() -> {
-//            List<String> names = Arrays.asList(playerName);
-//            GameManagerServer gameManagerServer = new GameManagerServer(names);
-//            this.game = gameManagerServer.getGame();
             //TODO разные экземпляры Game
 //            Main.getGameManagerServer().startGame();
 
