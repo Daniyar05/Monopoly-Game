@@ -1,4 +1,4 @@
-package com.monopoly.server.message;
+package com.monopoly.game.from_Server.message;
 
 public record GameMessage(Object type, String sender, String content) {
 

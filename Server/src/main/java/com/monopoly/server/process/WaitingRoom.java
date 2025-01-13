@@ -1,7 +1,7 @@
 package com.monopoly.server.process;
 
-import com.monopoly.server.message.GameMessage;
-import com.monopoly.server.message.PreparationMessageType;
+import com.monopoly.game.from_Server.message.GameMessage;
+import com.monopoly.game.from_Server.message.PreparationMessageType;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

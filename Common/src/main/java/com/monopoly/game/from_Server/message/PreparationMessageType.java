@@ -1,4 +1,4 @@
-package com.monopoly.server.message;
+package com.monopoly.game.from_Server.message;
 
 // Типы сообщений для подготовки к игре
 public enum PreparationMessageType {

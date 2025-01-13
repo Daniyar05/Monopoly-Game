@@ -19,6 +19,11 @@
     <dependencies>
         <dependency>
             <groupId>com.monopoly.game</groupId>
+            <artifactId>Common</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.monopoly.game</groupId>
             <artifactId>Core</artifactId>
             <version>1.0</version>
         </dependency>

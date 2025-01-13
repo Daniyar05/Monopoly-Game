@@ -12,6 +12,8 @@ module com.monopoly.graphics {
     requires com.almasb.fxgl.all;
 
     requires com.monopoly.core;
+    requires com.monopoly.common;
+
     exports com.monopoly.graphics;
 //    exports com.monopoly.graphics to javafx.graphics;
     exports com.monopoly.graphics.rendering to javafx.graphics, com.monopoly.server;

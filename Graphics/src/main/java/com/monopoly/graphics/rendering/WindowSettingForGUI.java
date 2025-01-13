@@ -1,9 +1,7 @@
 package com.monopoly.graphics.rendering;
 
-import com.monopoly.game.Game;
 import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.config.TileConfigurator;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -29,22 +27,6 @@ public class WindowSettingForGUI {
         this.WINDOW_SIZE=WINDOW_SIZE;
         this.PLAYER_POSITION=PLAYER_POSITION;
         update(primaryStage);
-//        // Основной контейнер
-//        BorderPane mainLayout = new BorderPane();
-//        // Создание игрового поля
-//        GridPane grid = new GridPane();
-//        List<Tile> tiles = TileConfigurator.configureTiles();
-//        createBoard(grid, tiles);
-//
-//        createDice(game,grid, 2,2);
-//        settings(grid);
-//        // Добавление игрового поля в центральную часть
-//        mainLayout.setCenter(grid);
-//        // Создание сцены
-//        Scene scene = new Scene(mainLayout, WINDOW_SIZE, WINDOW_SIZE);
-//        primaryStage.setTitle("Monopoly Board");
-//        primaryStage.setScene(scene);
-//        primaryStage.show();
     }
 
     private void createBoard(GridPane grid, List<Tile> tiles) {
@@ -136,4 +118,21 @@ public class WindowSettingForGUI {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    public void updatePlayerPosition(String playerName, String position) {
+        // Обновляем графическое представление игрока на основе его позиции
+        System.out.println("Игрок " + playerName + " переместился на " + position);
+        // Логика обновления GUI (например, обновление кнопки или отображения)
+    }
+    public void updateTileState(String tileData) {
+        // Обновляем графическое представление клетки на основе новых данных
+        System.out.println("Обновление клетки: " + tileData);
+    }
+    public void displayGameOver(String winner) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Конец игры");
+        alert.setHeaderText("Победитель: " + winner);
+        alert.setContentText("Спасибо за игру!");
+        alert.showAndWait();
+    }
+
 }

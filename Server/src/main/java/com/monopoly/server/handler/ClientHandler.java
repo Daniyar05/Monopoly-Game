@@ -1,8 +1,10 @@
 package com.monopoly.server.handler;
 
-import com.monopoly.server.message.GameMessage;
-import com.monopoly.server.message.MessageType;
-import com.monopoly.server.message.PreparationMessageType;
+import com.monopoly.game.from_Server.message.GameMessage;
+import com.monopoly.game.from_Server.message.MessageType;
+import com.monopoly.game.from_Server.message.MessageType.*;
+
+import com.monopoly.game.from_Server.message.PreparationMessageType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,9 +86,12 @@ public class ClientHandler implements Runnable {
             }
         } else if (message.type() instanceof MessageType gameType) {
             switch (gameType) {
-                case PLAYER_MOVE -> {
+                case PLAYER_MOVED -> {
                     System.out.println("Ход игрока: " + message.content());
                 }
+                case TILE_UPDATED -> {
+                    String playerName = message.sender();
+                                    }
             }
         } else {
             System.err.println("Неизвестный тип сообщения: " + message.type());

@@ -23,6 +23,7 @@ public class WindowSettings {
     private int WINDOW_SIZE = 800; // Фиксированный размер окна
     private int PLAYER_POSITION = 0; // Пример позиции игрока
     private final Game game;
+    private int x=0;
 
     public WindowSettings(int TILE_SIZE,int BOARD_SIZE,int WINDOW_SIZE,int PLAYER_POSITION, Stage primaryStage, Game game) {
         this.TILE_SIZE=TILE_SIZE;
@@ -63,6 +64,7 @@ public class WindowSettings {
         for (int i = 1; i < BOARD_SIZE - 1; i++) {
             createTileButton(tiles.get(count++), grid, BOARD_SIZE - 1, i);
         }
+        x++;
     }
 
 
@@ -87,6 +89,7 @@ public class WindowSettings {
             new Thread(() -> {
                 game.move();
                 Platform.runLater(() -> button.setDisable(false));
+                update();
             }).start();
 
         });
@@ -108,7 +111,8 @@ public class WindowSettings {
 
     private boolean isPlayerOnTile(int x, int y) {
         // Проверим, находится ли игрок на этой клетке (например, игрок на клетке 0,0)
-        return (x == 0 && y == 0); // Пример для игрока в начале (0,0)
+//        System.out.println(x+" "+y+" "+this.x+(x == this.x && y == 0));
+        return (x == this.x && y == 0); // Пример для игрока в начале (0,0)
     }
 
     private void openTileDescription(Tile tile) {
@@ -117,6 +121,21 @@ public class WindowSettings {
         alert.setHeaderText(tile.getName());
         alert.setContentText("Description: " + tile.getName());
         alert.showAndWait();
+    }
+
+    public void update() {
+        BorderPane mainLayout = new BorderPane();
+        // Создание игрового поля
+        GridPane grid = new GridPane();
+        List<Tile> tiles = TileConfigurator.configureTiles();
+        createBoard(grid, tiles);
+
+        createDice(game,grid, 2,2);
+
+        settings(grid);
+        // Добавление игрового поля в центральную часть
+        mainLayout.setCenter(grid);
+
     }
 
     public void update(Stage primaryStage) {

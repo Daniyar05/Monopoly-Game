@@ -7,10 +7,10 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>Server</artifactId>
+    <artifactId>Common</artifactId>
     <packaging>jar</packaging>
 
-    <name>Server</name>
+    <name>Common</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -18,20 +18,5 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.monopoly.game</groupId>
-            <artifactId>Graphics</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.monopoly.game</groupId>
-            <artifactId>Common</artifactId>
-        </dependency>
     </dependencies>
 </project>
