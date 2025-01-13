@@ -2,8 +2,10 @@ package com.monopoly.server.services;
 
 import com.monopoly.game.Game;
 import com.monopoly.graphics.GameGUI;
+import com.monopoly.server.Main;
 import com.monopoly.server.message.GameMessage;
 import com.monopoly.server.message.PreparationMessageType;
+import com.monopoly.server.process.WaitingRoom;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import static com.monopoly.server.Main.getGameManagerServer;
 
 public class ClientService implements Runnable {
 
@@ -62,10 +66,14 @@ public class ClientService implements Runnable {
 
         if (gameMessage.type() == PreparationMessageType.ALL_PLAYERS_READY) {
             System.out.println("Все игроки готовы! Ожидайте начала игры.");
+            Platform.runLater(() -> {
+                if (primaryStage.getUserData() instanceof WaitingRoom waitingRoom) {
+                    waitingRoom.updateAllPlayersReady(true);
+                }
+            });
         } else if (gameMessage.type() == PreparationMessageType.GAME_START) {
             System.out.println(gameMessage.sender());
             closeWaitingRoom();
-//            String[] playerNames = gameMessage.content().split(",");
             startGame();
         } else {
             System.err.println("Неизвестное сообщение от сервера: " + message);
@@ -77,6 +85,11 @@ public class ClientService implements Runnable {
 //            List<String> names = Arrays.asList(playerName);
 //            GameManagerServer gameManagerServer = new GameManagerServer(names);
 //            this.game = gameManagerServer.getGame();
+            //TODO разные экземпляры Game
+            Main.getGameManagerServer().startGame();
+
+            this.game = getGameManagerServer().getGame();
+            System.out.println("Добавлена game: " + game);
 
             GameGUI gameGUI = new GameGUI(game, nickname);
             gameGUI.start(new Stage());
@@ -84,7 +97,6 @@ public class ClientService implements Runnable {
     }
 
     private void closeWaitingRoom() {
-        System.out.println("closable");
         Platform.runLater(primaryStage::close);
     }
 }

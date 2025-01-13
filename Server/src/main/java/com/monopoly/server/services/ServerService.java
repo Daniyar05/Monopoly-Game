@@ -1,5 +1,6 @@
 package com.monopoly.server.services;
 
+import com.monopoly.server.Main;
 import com.monopoly.server.message.GameMessage;
 import com.monopoly.server.message.MessageType;
 import com.monopoly.server.message.PreparationMessageType;
@@ -35,10 +36,10 @@ public class ServerService implements Runnable {
         }
     }
 
-    public void setPlayerReady(String player, boolean isReady) {
-        playerReadyStatus.put(player, isReady);
-        checkAllPlayersReady();
-    }
+//    public void setPlayerReady(String player, boolean isReady) {
+//        playerReadyStatus.put(player, isReady);
+//        checkAllPlayersReady();
+//    }
 
     private static void checkAllPlayersReady() {
         if (playerReadyStatus.values().stream().allMatch(ready -> ready)) {
@@ -123,6 +124,11 @@ public class ServerService implements Runnable {
                         System.out.println("Начинаем игру!");
                         broadcast(new GameMessage(PreparationMessageType.GAME_START, "Server", String.join(",", getPlayerNames())).toString());
                     }
+                    case PLAYER_JOIN -> {
+                        String playerName = message.sender();
+                        playerReadyStatus.put(playerName, false);
+                    }
+
                 }
             } else if (message.type() instanceof MessageType gameType) {
                 switch (gameType) {

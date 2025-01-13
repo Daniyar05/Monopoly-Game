@@ -13,6 +13,12 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    private static final GameManagerServer gameManagerServer = new GameManagerServer();
+
+    public static GameManagerServer getGameManagerServer() {
+        return gameManagerServer;
+    }
+
     @Override
     public void start(Stage primaryStage) {
         String nickname = showInputDialog("Введите ваше имя:", "Имя");
@@ -22,7 +28,6 @@ public class Main extends Application {
         }
 
         boolean isHost = showConfirmDialog("Вы хотите стать хостом?", "Роль в игре");
-        GameManagerServer gameManagerServer = new GameManagerServer();
 
         if (isHost) {
             initializeHost(primaryStage, nickname, gameManagerServer);

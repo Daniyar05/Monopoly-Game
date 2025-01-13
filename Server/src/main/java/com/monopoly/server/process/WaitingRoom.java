@@ -21,6 +21,7 @@ public class WaitingRoom {
     private final Runnable onStartGame;
     private final String nickname;
     private final Consumer<GameMessage> clientServiceCommandSender;
+    private Button startGameButton;
 
     public WaitingRoom(boolean isHost, Consumer<Boolean> onReadyChanged, Runnable onStartGame,
                        String nickname, Consumer<GameMessage> clientServiceCommandSender) {
@@ -61,22 +62,20 @@ public class WaitingRoom {
         root.getChildren().addAll(title, statusLabel, buttonBox);
 
         if (isHost) {
-            Button startGameButton = new Button("Начать игру");
+            startGameButton = new Button("Начать игру");
             startGameButton.setDisable(true); // Изначально отключена
             startGameButton.setOnAction(e -> {
-                System.out.println("Игра началась");
                 sendStartGameCommand(); // Отправляем команду всем игрокам
-//                onStartGame.run();
             });
             root.getChildren().add(startGameButton);
-
             // Активировать кнопку при готовности всех игроков
-            onReadyChanged = ready -> Platform.runLater(() -> startGameButton.setDisable(!ready));
+//            onReadyChanged = ready -> Platform.runLater(() -> startGameButton.setDisable(!ready));
         }
 
         Scene scene = new Scene(root, 400, 200);
         stage.setScene(scene);
         stage.setTitle("Комната ожидания");
+        stage.setUserData(this);
         stage.show();
 
     }
@@ -91,7 +90,7 @@ public class WaitingRoom {
                         String.valueOf(ready)
                 )
         );
-        System.out.println("Статус готовности отправлен: " + (ready ? "Готов" : "Не готов"));
+//        System.out.println("Статус готовности отправлен: " + (ready ? "Готов" : "Не готов"));
     }
 
     private void sendStartGameCommand() {
@@ -105,6 +104,12 @@ public class WaitingRoom {
         )); // Отправляем команду каждому игроку
         System.out.println("Команда старт игры отправлена серверу " );//+ playerName);
 //        }
+    }
+
+    public void updateAllPlayersReady(boolean allReady) {
+        if (isHost && startGameButton != null) {
+            Platform.runLater(() -> startGameButton.setDisable(!allReady));
+        }
     }
 
     public void close(){
