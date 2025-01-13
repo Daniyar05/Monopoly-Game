@@ -112,7 +112,7 @@ public class WindowSettings {
     private boolean isPlayerOnTile(int x, int y) {
         // Проверим, находится ли игрок на этой клетке (например, игрок на клетке 0,0)
 //        System.out.println(x+" "+y+" "+this.x+(x == this.x && y == 0));
-        return (x == this.x && y == 0); // Пример для игрока в начале (0,0)
+        return (x == 0 && y == 0); // Пример для игрока в начале (0,0)
     }
 
     private void openTileDescription(Tile tile) {

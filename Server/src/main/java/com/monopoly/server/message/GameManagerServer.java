@@ -21,10 +21,10 @@ public class GameManagerServer {
         this.players = new ArrayList<>();
     }
 
-    public GameManagerServer(List<String> playerNames) {
-        this.players = new ArrayList<>();
-        playerNames.forEach(name -> players.add(new Player(name, new Cash(BASE_AMOUNT_CASH))));
-    }
+//    public GameManagerServer(List<String> playerNames) {
+//        this.players = new ArrayList<>();
+//        playerNames.forEach(name -> players.add(new Player(name, new Cash(BASE_AMOUNT_CASH))));
+//    }
 
     public void addPlayer(String username) {
         players.add(new Player(username, new Cash(BASE_AMOUNT_CASH)));
@@ -43,11 +43,18 @@ public class GameManagerServer {
         }
     }
 
-    private String getPlayerNames() {
-        return String.join(",", players.stream().map(Player::getName).toList());
-    }
+//    private String getPlayerNames() {
+//        return String.join(",", players.stream().map(Player::getName).toList());
+//    }
+//
+//    public Game getGame() {
+//        return game;
+//    }
 
-    public Game getGame() {
-        return game;
+    public int move(String sender) {
+        if (game.getNowPlayer().getName().equals(sender)){
+            return game.move();
+        }
+        return -1;
     }
 }

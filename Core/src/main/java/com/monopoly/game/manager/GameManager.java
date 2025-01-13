@@ -25,7 +25,7 @@ public class GameManager {
         playerManager.stop();
     }
 
-    public void move(){
+    public int move(){
         Player playerNow = playerManager.nowPlayer();
         eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' start moved");
         int step = rollDice();
@@ -33,6 +33,7 @@ public class GameManager {
         boardManager.move(positionOnBoard, playerNow);
         moveFinish();
         eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' finish moved");
+        return positionOnBoard;
     }
 
     private void moveFinish() {

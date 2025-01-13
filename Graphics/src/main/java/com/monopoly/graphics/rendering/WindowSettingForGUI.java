@@ -2,6 +2,9 @@ package com.monopoly.graphics.rendering;
 
 import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.config.TileConfigurator;
+import com.monopoly.game.from_Server.message.GameMessage;
+import com.monopoly.game.from_Server.message.MessageType;
+import com.monopoly.game.from_Server.service.ClientServiceInterface;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,12 +23,17 @@ public class WindowSettingForGUI {
     private int BOARD_SIZE = 8; // Количество клеток на стороне
     private int WINDOW_SIZE = 800; // Фиксированный размер окна
     private int PLAYER_POSITION = 0; // Пример позиции игрока
+    private final ClientServiceInterface clientService;
+    private final String nickname;
+    private Stage stage;
 
-    public WindowSettingForGUI(int TILE_SIZE, int BOARD_SIZE, int WINDOW_SIZE, int PLAYER_POSITION, Stage primaryStage) {
+    public WindowSettingForGUI(int TILE_SIZE, int BOARD_SIZE, int WINDOW_SIZE, int PLAYER_POSITION, Stage primaryStage, ClientServiceInterface clientService, String nickname) {
         this.TILE_SIZE=TILE_SIZE;
         this.BOARD_SIZE=BOARD_SIZE;
         this.WINDOW_SIZE=WINDOW_SIZE;
         this.PLAYER_POSITION=PLAYER_POSITION;
+        this.clientService = clientService;
+        this.nickname = nickname;
         update(primaryStage);
     }
 
@@ -72,6 +80,22 @@ public class WindowSettingForGUI {
 //        });
 //        grid.add(button, x, y);
 //    }
+// Добавление кубика на интерфейс
+    private void createDiceButton(GridPane grid, int x, int y) {
+        Button diceButton = new Button("Roll Dice");
+        diceButton.setPrefSize(TILE_SIZE, TILE_SIZE);
+        diceButton.setOnAction(e -> {
+            // Отправка запроса на сервер для генерации числа
+//            clientService.sendCommand("ROLL_DICE");
+            clientService.sendCommand(new GameMessage(
+                    MessageType.ROLL_DICE,
+                    nickname,
+                    ""
+            ));
+
+        });
+        grid.add(diceButton, x, y);
+    }
 
     private void createTileButton(Tile tile, GridPane grid, int x, int y) {
         Button button = new Button(tile.getName());
@@ -88,7 +112,9 @@ public class WindowSettingForGUI {
 
     private boolean isPlayerOnTile(int x, int y) {
         // Проверим, находится ли игрок на этой клетке (например, игрок на клетке 0,0)
-        return (x == 0 && y == 0); // Пример для игрока в начале (0,0)
+        int currentPlayerX = PLAYER_POSITION % BOARD_SIZE;
+        int currentPlayerY = PLAYER_POSITION / BOARD_SIZE;
+        return (x == currentPlayerX && y == currentPlayerY);
     }
 
     private void openTileDescription(Tile tile) {
@@ -100,6 +126,7 @@ public class WindowSettingForGUI {
     }
 
     public void update(Stage primaryStage) {
+        this.stage=primaryStage;
         // Основной контейнер
         BorderPane mainLayout = new BorderPane();
         // Создание игрового поля
@@ -108,6 +135,7 @@ public class WindowSettingForGUI {
         createBoard(grid, tiles);
 
 //        createDice(game,grid, 2,2);
+        createDiceButton(grid, BOARD_SIZE / 2, BOARD_SIZE / 2);
 
         settings(grid);
         // Добавление игрового поля в центральную часть
@@ -119,10 +147,14 @@ public class WindowSettingForGUI {
         primaryStage.show();
     }
     public void updatePlayerPosition(String playerName, String position) {
-        // Обновляем графическое представление игрока на основе его позиции
-        System.out.println("Игрок " + playerName + " переместился на " + position);
-        // Логика обновления GUI (например, обновление кнопки или отображения)
+        // Обновляем положение игрока
+        PLAYER_POSITION = Integer.parseInt(position);
+        System.out.println("Игрок " + playerName + " переместился на клетку " + position);
+
+        // Обновление GUI
+        update(stage);
     }
+
     public void updateTileState(String tileData) {
         // Обновляем графическое представление клетки на основе новых данных
         System.out.println("Обновление клетки: " + tileData);

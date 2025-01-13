@@ -24,6 +24,7 @@ public class ClientHandler implements Runnable {
     private final PrintWriter out;
     private final BufferedReader in;
 
+
     public ClientHandler(Socket socket, Map<String, Boolean> playerReadyStatus, List<String> playerNames) {
         this.playerNames=playerNames;
         this.playerReadyStatus = playerReadyStatus;
@@ -91,7 +92,19 @@ public class ClientHandler implements Runnable {
                 }
                 case TILE_UPDATED -> {
                     String playerName = message.sender();
-                                    }
+                }
+                case ROLL_DICE -> {
+                    System.out.println("ROLL_DICE is can");
+                    int position = getGameManagerServer().move(message.sender());
+                    if (position != -1) {
+                        broadcast(new GameMessage(
+                                MessageType.PLAYER_MOVED,
+                                message.sender(),
+                                String.valueOf(position)
+                        ).toString());
+                    }
+                }
+
             }
         } else {
             System.err.println("Неизвестный тип сообщения: " + message.type());

@@ -31,7 +31,7 @@ public class GameGUI extends Application {
     @Override
     public void start(Stage stage)  {
         this.stage=stage;
-        this.windowSetting = new WindowSettingForGUI(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, stage);
+        this.windowSetting = new WindowSettingForGUI(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, stage, clientService, playerName);
     }
 
     public void updateWindow(){

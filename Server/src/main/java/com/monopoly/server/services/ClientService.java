@@ -65,32 +65,44 @@ public class ClientService implements Runnable, ClientServiceInterface {
 
     private void processServerMessage(String message) {
         GameMessage gameMessage = GameMessage.fromString(message);
-
-        if (gameMessage.type() == PreparationMessageType.ALL_PLAYERS_READY) {
-            System.out.println("Все игроки готовы! Ожидайте начала игры.");
-            Platform.runLater(() -> {
-                if (primaryStage.getUserData() instanceof WaitingRoom waitingRoom) {
-                    waitingRoom.updateAllPlayersReady(true);
-                }
-            });
-        } else if (gameMessage.type() == PreparationMessageType.GAME_START) {
-            closeWaitingRoom();
-            startGame();
-        } else if (message.contains("UPDATE")) {
+        if (gameMessage.type() instanceof MessageType) {
             processServerUpdate(message);
-        }else {
-            System.err.println("Неизвестное сообщение от сервера: " + message);
+            return;
+        }
+
+        if (gameMessage.type() instanceof PreparationMessageType prepType) {
+            switch (prepType) {
+                case ALL_PLAYERS_READY -> {
+                    System.out.println("Все игроки готовы! Ожидайте начала игры.");
+                    Platform.runLater(() -> {
+                        if (primaryStage.getUserData() instanceof WaitingRoom waitingRoom) {
+                            waitingRoom.updateAllPlayersReady(true);
+                        }
+                    });
+                }
+                case GAME_START -> {
+                    closeWaitingRoom();
+                    startGame();
+                }
+                default -> System.err.println("Неизвестное сообщение от сервера: " + message);
+            }
         }
     }
 
     private void processServerUpdate(String message) {
+        if (gameGUI.getWindowSetting() == null) {
+            System.err.println("WindowSetting не инициализирован.");
+            return;
+        }
         GameMessage gameMessage = GameMessage.fromString(message);
 
         Platform.runLater(() -> {
             // Обработка различных типов обновлений
+            System.out.println(gameMessage.type());
             if (gameMessage.type() instanceof MessageType prepType) {
                 switch (prepType) {
                     case PLAYER_MOVED:
+                        System.out.println("PLAYER_MOVED on ClientService");
                         gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
                         break;
                     case TILE_UPDATED:
@@ -98,6 +110,10 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         break;
                     case GAME_OVER:
                         gameGUI.getWindowSetting().displayGameOver(gameMessage.content());
+                        break;
+                    case ROLL_DICE:
+                        System.out.println("Каким-то чудом попали не туда");
+                        gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
                         break;
                     default:
                         System.err.println("Неизвестный тип сообщения: " + gameMessage.type());
