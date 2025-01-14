@@ -57,4 +57,10 @@ public class GameManagerServer {
         }
         return -1;
     }
+
+    public void addPlayers(List<String> playerNames) {
+        for (String playerName : playerNames) {
+            addPlayer(playerName);
+        }
+    }
 }

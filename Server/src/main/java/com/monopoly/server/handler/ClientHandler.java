@@ -76,6 +76,7 @@ public class ClientHandler implements Runnable {
                 }
                 case GAME_START -> {
                     System.out.println("Начинаем игру!");
+                    getGameManagerServer().addPlayers(playerNames);
                     getGameManagerServer().startGame();
                     broadcast(new GameMessage(PreparationMessageType.GAME_START, "Server", String.join(",", getPlayerNames())).toString());
                 }
@@ -94,7 +95,6 @@ public class ClientHandler implements Runnable {
                     String playerName = message.sender();
                 }
                 case ROLL_DICE -> {
-                    System.out.println("ROLL_DICE is can");
                     int position = getGameManagerServer().move(message.sender());
                     if (position != -1) {
                         broadcast(new GameMessage(

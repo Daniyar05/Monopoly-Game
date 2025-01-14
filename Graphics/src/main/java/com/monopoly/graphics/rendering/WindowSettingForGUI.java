@@ -14,26 +14,33 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WindowSettingForGUI {
     private int TILE_SIZE = 100; // Размер одной клетки
     private int BOARD_SIZE = 8; // Количество клеток на стороне
     private int WINDOW_SIZE = 800; // Фиксированный размер окна
-    private int PLAYER_POSITION = 0; // Пример позиции игрока
+//    private int PLAYER_POSITION = 0; // Пример позиции игрока
     private final ClientServiceInterface clientService;
     private final String nickname;
     private Stage stage;
+
+    // Карта позиций игроков (имя -> позиция)
+    private final Map<String, Integer> playerPositions = new HashMap<>();
 
     public WindowSettingForGUI(int TILE_SIZE, int BOARD_SIZE, int WINDOW_SIZE, int PLAYER_POSITION, Stage primaryStage, ClientServiceInterface clientService, String nickname) {
         this.TILE_SIZE=TILE_SIZE;
         this.BOARD_SIZE=BOARD_SIZE;
         this.WINDOW_SIZE=WINDOW_SIZE;
-        this.PLAYER_POSITION=PLAYER_POSITION;
+//        this.PLAYER_POSITION=PLAYER_POSITION;
         this.clientService = clientService;
         this.nickname = nickname;
+        playerPositions.put(nickname, PLAYER_POSITION);
         update(primaryStage);
     }
 
@@ -102,20 +109,57 @@ public class WindowSettingForGUI {
         button.setPrefSize(TILE_SIZE, TILE_SIZE);
         button.setOnAction(e -> openTileDescription(tile));
 
-        // Добавляем точку, если клетка соответствует местоположению игрока
-        if (isPlayerOnTile(x, y)) {
-            Circle circle = new Circle(10, Color.RED); // точка игрока
-            button.setGraphic(circle);
+        // Проверяем, находятся ли игроки на этой клетке
+        StringBuilder playersOnTile = new StringBuilder();
+        playerPositions.forEach((playerName, position) -> {
+            if (isPlayerOnTile(playerName, x, y)) {
+                playersOnTile.append(playerName).append(" ");
+            }
+        });
+
+        // Если есть игроки на клетке, добавляем их в отображение
+        if (!playersOnTile.isEmpty()) {
+            button.setText(button.getText() + "\n[" + playersOnTile.toString().trim() + "]");
         }
+
+
         grid.add(button, x, y);
     }
-
-    private boolean isPlayerOnTile(int x, int y) {
-        // Проверим, находится ли игрок на этой клетке (например, игрок на клетке 0,0)
-        int currentPlayerX = PLAYER_POSITION % BOARD_SIZE;
-        int currentPlayerY = PLAYER_POSITION / BOARD_SIZE;
-        return (x == currentPlayerX && y == currentPlayerY);
+    private boolean isPlayerOnTile(String playerName, int x, int y) {
+        Integer playerPosition = playerPositions.get(playerName);
+        if (playerPosition == null) {
+            return false;
+        }
+        int[] playerCoordinates = calculatePlayerCoordinates(playerPosition);
+        return (x == playerCoordinates[1] && y == playerCoordinates[0]);
     }
+
+
+    //    private boolean isPlayerOnTile(int x, int y, int position) {
+//        int playerX = position % BOARD_SIZE;
+//        int playerY = position / BOARD_SIZE;
+//        return x == playerX && y == playerY;
+//    }
+private int[] calculatePlayerCoordinates(int position) {
+    int totalTiles = BOARD_SIZE * 4 - 4; // Общее количество клеток на периметре
+    int normalizedPosition = position % totalTiles;
+
+    // Перемещение по периметру
+    if (normalizedPosition < BOARD_SIZE) {
+        // Нижняя сторона (справа налево)
+        return new int[]{BOARD_SIZE - 1, BOARD_SIZE - 1 - normalizedPosition};
+    } else if (normalizedPosition < BOARD_SIZE * 2 - 1) {
+        // Левая сторона (снизу вверх)
+        return new int[]{BOARD_SIZE - 1 - (normalizedPosition - (BOARD_SIZE - 1)), 0};
+    } else if (normalizedPosition < BOARD_SIZE * 3 - 2) {
+        // Верхняя сторона (слева направо)
+        return new int[]{0, normalizedPosition - (BOARD_SIZE * 2 - 2)};
+    } else {
+        // Правая сторона (сверху вниз)
+        return new int[]{normalizedPosition - (BOARD_SIZE * 3 - 3), BOARD_SIZE - 1};
+    }
+}
+
 
     private void openTileDescription(Tile tile) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -148,7 +192,7 @@ public class WindowSettingForGUI {
     }
     public void updatePlayerPosition(String playerName, String position) {
         // Обновляем положение игрока
-        PLAYER_POSITION = Integer.parseInt(position);
+        playerPositions.put(playerName, Integer.parseInt(position));
         System.out.println("Игрок " + playerName + " переместился на клетку " + position);
 
         // Обновление GUI

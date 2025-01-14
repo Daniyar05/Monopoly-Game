@@ -44,7 +44,7 @@ public class Main extends Application {
         ClientService clientService = new ClientService("127.0.0.1", 1234, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
-        gameManagerServer.addPlayer(nickname);
+//        gameManagerServer.addPlayer(nickname);
 
         WaitingRoom waitingRoom = new WaitingRoom(
                 true,
@@ -71,7 +71,8 @@ public class Main extends Application {
         ClientService clientService = new ClientService(hostIp, 1234, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
-        gameManagerServer.addPlayer(nickname);
+
+//        gameManagerServer.addPlayer(nickname);
 
         WaitingRoom waitingRoom = new WaitingRoom(
                 false,

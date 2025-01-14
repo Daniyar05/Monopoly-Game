@@ -82,6 +82,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                 }
                 case GAME_START -> {
                     closeWaitingRoom();
+
                     startGame();
                 }
                 default -> System.err.println("Неизвестное сообщение от сервера: " + message);
@@ -98,12 +99,12 @@ public class ClientService implements Runnable, ClientServiceInterface {
 
         Platform.runLater(() -> {
             // Обработка различных типов обновлений
-            System.out.println(gameMessage.type());
             if (gameMessage.type() instanceof MessageType prepType) {
                 switch (prepType) {
                     case PLAYER_MOVED:
-                        System.out.println("PLAYER_MOVED on ClientService");
-                        gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
+                        if(!"-1".equals(gameMessage.content())) {
+                            gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
+                        }
                         break;
                     case TILE_UPDATED:
                         gameGUI.getWindowSetting().updateTileState(gameMessage.content());

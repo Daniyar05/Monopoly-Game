@@ -29,8 +29,8 @@ public class GameManager {
         Player playerNow = playerManager.nowPlayer();
         eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' start moved");
         int step = rollDice();
-        int positionOnBoard = playerManager.move(step);
-        boardManager.move(positionOnBoard, playerNow);
+        int positionPlayer = playerManager.move(step);
+        int positionOnBoard = boardManager.move(positionPlayer, playerNow);
         moveFinish();
         eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' finish moved");
         return positionOnBoard;

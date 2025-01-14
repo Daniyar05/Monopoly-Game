@@ -23,10 +23,11 @@ public class BoardManager {
 
     }
 
-    public void move(int position, Player player) {
-        eventManager.notifyAboutAction("Move on BoardManager - "+position);
+    public int move(int position, Player player) {
         Tile tile = board.getTile(position);
+        eventManager.notifyAboutAction("Move on BoardManager - "+tile.getPosition());
         tileManager.move(tile, player);
+        return tile.getPosition();
     }
 
     public void moveToJail(Player player){
