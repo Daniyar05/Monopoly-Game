@@ -112,13 +112,11 @@ public class ClientHandler implements Runnable {
                     System.out.println("Сервером получен ответ на PLAYER_CHOICE");
                     responseMap.put(message.sender(), message.content());
                 }
-
-
             }
         } else {
             System.err.println("Неизвестный тип сообщения: " + message.type());
         }
-        System.out.println("END");
+//        System.out.println("END");
     }
 
     public void sendMessage(String message) {

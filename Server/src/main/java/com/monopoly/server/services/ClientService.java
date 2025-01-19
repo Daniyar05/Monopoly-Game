@@ -145,7 +145,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         gameGUI.getWindowSetting().updateTileState(gameMessage.content());
                         break;
                     case NEW_TILE_OWNER:
-                        gameGUI.getWindowSetting().updateTileOwner(gameMessage.getSplitContent());
+                        gameGUI.getWindowSetting().updateTileOwner(gameMessage);
                         break;
                     case GAME_OVER:
                         gameGUI.getWindowSetting().displayGameOver(gameMessage.content());
@@ -157,14 +157,12 @@ public class ClientService implements Runnable, ClientServiceInterface {
                     case PLAYER_CHOICE:
                         System.out.println("Пришло сообщение " + gameMessage);
                         if (nickname.equals(gameMessage.sender())) {
-                            System.out.println("Это мое сообщение");
                             clientEventManager.choiceYes(EventEnum.BUY_IT);
                         }
                         break;
                     case NOTIFICATION:
                         System.out.println("Пришло сообщение " + gameMessage);
                         if (nickname.equals(gameMessage.sender())) {
-                            System.out.println("Это мое сообщение");
 //                            clientEventManager.notifyAboutAction(gameMessage.content(), gameMessage.sender());
                         }
                         break;

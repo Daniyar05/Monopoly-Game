@@ -27,7 +27,7 @@ public class ClientEventManager implements EventManager {
         return choiceYes(question, new ChoiceHandler() {
             @Override
             public void handle(boolean userChoice) {
-                System.out.println("Пользователь выбрал: " + userChoice);
+//                System.out.println("Пользователь выбрал: " + userChoice);
                 // После завершения выбора вызываем sendCommand
                 sendCommand(new GameMessage(MessageType.PLAYER_CHOICE, nickname, Boolean.toString(userChoice)));
             }
@@ -37,12 +37,12 @@ public class ClientEventManager implements EventManager {
         void handle(boolean userChoice);
     }
     public boolean choiceYes(EventEnum question, ChoiceHandler choiceHandler) {
-        System.out.println("Запустил вопросник");
+//        System.out.println("Запустил вопросник");
 
         // Переменная для хранения ответа
         // Создаем диалоговое окно в UI-потоке
         Platform.runLater(() -> {
-            System.out.println("Создание Alert");
+//            System.out.println("Создание Alert");
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Choice Dialog");
             alert.setHeaderText("Make a Choice");
@@ -80,8 +80,9 @@ public class ClientEventManager implements EventManager {
         });
     }
 
+    @Override
     public void sendCommand(GameMessage message) {
-        System.out.println("Отправленно на сервер");
+//        System.out.println("Отправленно на сервер");
         out.println(message.toString());
     }
 }

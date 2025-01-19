@@ -127,12 +127,18 @@ public class EventManagerGUI implements EventManager {
         }
 
         // Возвращаем результат
-        return serverService.getResponse(question.getFrom()).equals("true");
+        boolean result = Boolean.valueOf(serverService.getResponse(question.getFrom()));
+        return result;
     }
 
     @Override
     public void notifyAboutAction(String message, String username) {
         serverService.sendCommandForOneClient(new GameMessage(MessageType.NOTIFICATION, username, message)); // message изменить
+    }
+
+    @Override
+    public void sendCommand(GameMessage gameMessage) {
+        serverService.sendCommandForOneClient(gameMessage);
     }
 }
 

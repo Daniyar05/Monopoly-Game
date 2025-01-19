@@ -227,10 +227,10 @@ private int[] calculatePlayerCoordinates(int position) {
 
         mainLayout.setRight(playerInfoBox); // Боковая панель справа
     }
-    public void updateTileOwner(String[] tile) {
+    public void updateTileOwner(GameMessage gameMessage) {
         // Обновляем владельца клетки
-        tileOwners.put(tile[0], tile[1]);
-        System.out.println("Клетка " + tile[0] + " теперь принадлежит " + tile[1]);
+        tileOwners.put(gameMessage.content(), gameMessage.sender());
+        System.out.println("Клетка " + gameMessage.content() + " теперь принадлежит " + gameMessage.sender());
 
         // Перерисовываем интерфейс
         update(stage);
