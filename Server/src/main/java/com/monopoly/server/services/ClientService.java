@@ -159,7 +159,6 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         if (nickname.equals(gameMessage.sender())) {
                             System.out.println("Это мое сообщение");
                             clientEventManager.choiceYes(EventEnum.BUY_IT);
-
                         }
                         break;
                     case NOTIFICATION:

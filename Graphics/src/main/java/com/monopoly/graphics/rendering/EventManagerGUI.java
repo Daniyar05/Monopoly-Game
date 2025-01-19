@@ -110,12 +110,14 @@ public class EventManagerGUI implements EventManager {
 
     @Override
     public boolean choiceYes(EventEnum question) {
+
         // Отправляем запрос клиенту
         GameMessage gameMessage = new GameMessage(MessageType.PLAYER_CHOICE, question.getFrom(), question.getValue());
         serverService.sendCommandForOneClient(gameMessage); // Value передавать имя пользователя
 
         // Ждем ответа от клиента
         while (!serverService.hasResponse(question.getFrom())) {
+
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

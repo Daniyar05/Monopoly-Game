@@ -98,24 +98,27 @@ public class ClientHandler implements Runnable {
                     message.content();
                 }
                 case ROLL_DICE -> {
-                    int position = getGameManagerServer().move(message.sender());
-                    if (position != -1) {
-                        broadcast(new GameMessage(
-                                MessageType.PLAYER_MOVED,
-                                message.sender(),
-                                String.valueOf(position)
-                        ).toString());
-                    }
+                    new Thread(() -> {
+                        int position = getGameManagerServer().move(message.sender());
+                        if (position != -1) {
+                            broadcast(new GameMessage(
+                                    MessageType.PLAYER_MOVED,
+                                    message.sender(),
+                                    String.valueOf(position)
+                            ).toString());
+                         }}).start();
                 }
                 case PLAYER_CHOICE -> {
                     System.out.println("Сервером получен ответ на PLAYER_CHOICE");
                     responseMap.put(message.sender(), message.content());
                 }
 
+
             }
         } else {
             System.err.println("Неизвестный тип сообщения: " + message.type());
         }
+        System.out.println("END");
     }
 
     public void sendMessage(String message) {
