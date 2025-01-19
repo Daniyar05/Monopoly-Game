@@ -20,11 +20,17 @@ public record GameMessage(Object type, String sender, String content) {
     }
 
     private static Object determineType(String typeName) {
-        // Определяем тип сообщения
         try {
             return PreparationMessageType.valueOf(typeName);
         } catch (IllegalArgumentException e) {
             return MessageType.valueOf(typeName);
         }
+    }
+    public String[] getSplitContent(){
+        return content.split("\\$");
+    }
+
+    public static String stringOf(String[] strings){
+        return String.join("$", strings);
     }
 }

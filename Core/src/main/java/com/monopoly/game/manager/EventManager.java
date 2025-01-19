@@ -1,9 +1,9 @@
 package com.monopoly.game.manager;
 
-import com.monopoly.game.component.model.EventEnum;
+import com.monopoly.game.from_Server.message.EventEnum;
 
 public interface EventManager {
     boolean choiceYes(EventEnum question);
 
-    void notifyAboutAction(String string);
+    void notifyAboutAction(String string, String username);
 }

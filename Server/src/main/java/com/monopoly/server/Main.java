@@ -30,16 +30,16 @@ public class Main extends Application {
         boolean isHost = showConfirmDialog("Вы хотите стать хостом?", "Роль в игре");
 
         if (isHost) {
-            initializeHost(primaryStage, nickname, gameManagerServer);
+            initializeHost(primaryStage, nickname);
         } else {
-            initializeClient(primaryStage, nickname, gameManagerServer);
+            initializeClient(primaryStage, nickname);
         }
     }
 
-    private void initializeHost(Stage primaryStage, String nickname, GameManagerServer gameManagerServer) {
+    private void initializeHost(Stage primaryStage, String nickname) {
         ServerService serverService = new ServerService(1234);
         new Thread(serverService).start();
-
+        gameManagerServer.setServerService(serverService);
         Stage waitingRoomStage = new Stage();
         ClientService clientService = new ClientService("127.0.0.1", 1234, nickname, waitingRoomStage);
         new Thread(clientService).start();
@@ -59,7 +59,7 @@ public class Main extends Application {
         waitingRoom.start(waitingRoomStage);
     }
 
-    private void initializeClient(Stage primaryStage, String nickname, GameManagerServer gameManagerServer) {
+    private void initializeClient(Stage primaryStage, String nickname) {
         String hostIp = showInputDialog("Введите IP хоста:", "IP Адрес");
         if (hostIp == null || hostIp.isBlank()) {
             hostIp="127.0.0.1";

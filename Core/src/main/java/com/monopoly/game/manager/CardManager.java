@@ -29,7 +29,7 @@ public class CardManager{
             //TODO добавить логику и реализацию
             communityChestCardList.add(card);
         } else {
-            eventManager.notifyAboutAction("The Type Card does not match base types");
+            eventManager.notifyAboutAction("The Type Card does not match base types", targetPlayer.getName());
         }
     }
 }

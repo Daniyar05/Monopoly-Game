@@ -1,7 +1,7 @@
 package com.monopoly.game.manager;
 
-import com.monopoly.game.component.model.Event;
-import com.monopoly.game.component.model.EventEnum;
+import com.monopoly.game.from_Server.message.Event;
+import com.monopoly.game.from_Server.message.EventEnum;
 
 public class EventManagerConsole implements EventManager{
 
@@ -13,7 +13,7 @@ public class EventManagerConsole implements EventManager{
     }
 
     @Override
-    public void notifyAboutAction(String string){
+    public void notifyAboutAction(String string, String username){
         System.out.println(string);
     }
 }

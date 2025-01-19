@@ -41,16 +41,16 @@ public class GameGUI extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    public void sendMoveCommand(String moveData) {
-//        clientService.sendCommand("MOVE " + moveData);
-        clientService.sendCommand(new GameMessage(
-                MessageType.PLAYER_MOVED,
-                playerName,
-                //FIXME добавить полезную информацию (желательно систематизировать вложенным запросом
-                moveData
-
-        ));
-
-    }
+//    public void sendMoveCommand(String moveData) {
+////        clientService.sendCommand("MOVE " + moveData);
+//        clientService.sendCommand(new GameMessage(
+//                MessageType.PLAYER_MOVED,
+//                playerName,
+//                //FIXME добавить полезную информацию (желательно систематизировать вложенным запросом
+//                moveData
+//
+//        ));
+//
+//    }
 
 }

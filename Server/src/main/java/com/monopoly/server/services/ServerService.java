@@ -1,5 +1,7 @@
 package com.monopoly.server.services;
 
+import com.monopoly.game.from_Server.message.GameMessage;
+import com.monopoly.game.from_Server.service.ServerServiceInterface;
 import com.monopoly.server.handler.ClientHandler;
 
 import java.io.IOException;
@@ -11,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class ServerService implements Runnable {
+public class ServerService implements Runnable, ServerServiceInterface {
 
     private final ServerSocket serverSocket;
     private final Map<String, Boolean> playerReadyStatus = new HashMap<>();
@@ -22,6 +24,8 @@ public class ServerService implements Runnable {
     public static List<String> getPlayerNames() {
         return playerNames;
     }
+
+    public static final Map<String, String> responseMap = new HashMap<>();
 
     public ServerService(int port) {
         try {
@@ -51,5 +55,30 @@ public class ServerService implements Runnable {
             client.sendMessage(message);
         }
     }
+
+    @Override
+    public void sendCommandForOneClient(GameMessage gameMessage) {
+        broadcast(gameMessage.toString());
+    }
+
+    @Override
+    public boolean hasResponse(String username) {
+        return responseMap.containsKey(username);
+    }
+
+    @Override
+    public String getResponse(String username) {
+        return responseMap.get(username);
+    }
+
+//    public void sendRequestToClient(String clientName, GameMessage message) {
+//        for (ClientHandler client : clients) {
+//
+//            if (client.getNickname().equals(clientName)) {
+//                client.sendMessage(message.toString());
+//                break;
+//            }
+//        }
+//    }
 
 }

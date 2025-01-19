@@ -1,5 +1,6 @@
 package com.monopoly.game.manager;
 
+import com.monopoly.game.action.processGame.EventMoveGame;
 import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.component.model.Board;
 import com.monopoly.game.component.model.Player;
@@ -25,7 +26,7 @@ public class BoardManager {
 
     public int move(int position, Player player) {
         Tile tile = board.getTile(position);
-        eventManager.notifyAboutAction("Move on BoardManager - "+tile.getPosition());
+        eventManager.notifyAboutAction("Move on BoardManager - "+tile.getPosition(), player.getName());
         tileManager.move(tile, player);
         return tile.getPosition();
     }

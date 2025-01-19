@@ -28,7 +28,7 @@ public class MonopolyBoard extends Application {
                 .players(List.of(player1, player2))
                 .tiles(TileConfigurator.configureTiles())
                 .build(),
-                new EventManagerGUI());
+                new EventManagerGUI(null));
         game.start();
 
         WindowSettings windowSettings = new WindowSettings(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, primaryStage, game);

@@ -18,5 +18,6 @@ public class BuyingProperty extends AbstractPromissoryNote{
         getPlayerTo().getWallet().subtractCash(getCash());
         getPlayerTo().addOwnedProperties(propertyTile);
         propertyTile.setOwner(getPlayerTo());
+
     }
 }

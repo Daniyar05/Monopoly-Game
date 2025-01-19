@@ -1,10 +1,14 @@
 package com.monopoly.server.services;
 
+import com.monopoly.game.component.area.PropertyTile;
+import com.monopoly.game.component.area.Tile;
+import com.monopoly.game.from_Server.message.EventEnum;
 import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.message.PreparationMessageType;
 import com.monopoly.game.from_Server.service.ClientServiceInterface;
 import com.monopoly.graphics.GameGUI;
+import com.monopoly.graphics.rendering.ClientEventManager;
 import com.monopoly.server.process.WaitingRoom;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -14,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import static com.monopoly.game.from_Server.message.MessageType.*;
 
@@ -26,21 +32,50 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private final String nickname;
     private final Stage primaryStage;
     private GameGUI gameGUI;
-
+    private final BlockingQueue<Boolean> responseQueue = new ArrayBlockingQueue<>(1);
+    private ClientEventManager clientEventManager;
 
     public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
             this.socket = new Socket(host, port);
             this.nickname = nickname;
             this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.clientEventManager = new ClientEventManager(out, nickname);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.primaryStage = primaryStage;
         } catch (IOException e) {
             throw new RuntimeException("Ошибка подключения к серверу: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public void sendEventRequest(EventEnum question) {
+
+    }
+
+    @Override
+    public boolean hasResponse() {
+        return !responseQueue.isEmpty();
+    }
+
+    @Override
+    public boolean getResponse() {
+        try {
+            return responseQueue.take();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Ошибка получения ответа", e);
+        }
+    }
+
+    @Override
+    public void sendNotification(String message) {
+
+    }
+
     @Override
     public void sendCommand(GameMessage message) {
+
         out.println(message.toString());
     }
 
@@ -81,6 +116,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                     });
                 }
                 case GAME_START -> {
+                    System.out.println("Получил сообщение от сервера о старте игры");
                     closeWaitingRoom();
 
                     startGame();
@@ -109,6 +145,9 @@ public class ClientService implements Runnable, ClientServiceInterface {
                     case TILE_UPDATED:
                         gameGUI.getWindowSetting().updateTileState(gameMessage.content());
                         break;
+                    case NEW_TILE_OWNER:
+                        gameGUI.getWindowSetting().updateTileOwner(gameMessage.getSplitContent());
+                        break;
                     case GAME_OVER:
                         gameGUI.getWindowSetting().displayGameOver(gameMessage.content());
                         break;
@@ -116,6 +155,21 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         System.out.println("Каким-то чудом попали не туда");
                         gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
                         break;
+                    case PLAYER_CHOICE:
+                        System.out.println("Пришло сообщение " + gameMessage);
+                        if (nickname.equals(gameMessage.sender())) {
+                            System.out.println("Это мое сообщение");
+                            clientEventManager.choiceYes(EventEnum.BUY_IT);
+                        }
+                        break;
+                    case NOTIFICATION:
+                        System.out.println("Пришло сообщение " + gameMessage);
+                        if (nickname.equals(gameMessage.sender())) {
+                            System.out.println("Это мое сообщение");
+//                            clientEventManager.notifyAboutAction(gameMessage.content(), gameMessage.sender());
+                        }
+                        break;
+
                     default:
                         System.err.println("Неизвестный тип сообщения: " + gameMessage.type());
                 }
@@ -125,9 +179,6 @@ public class ClientService implements Runnable, ClientServiceInterface {
 
     private void startGame() {
         Platform.runLater(() -> {
-            //TODO разные экземпляры Game
-//            Main.getGameManagerServer().startGame();
-
             gameGUI = new GameGUI(nickname, this);
             gameGUI.start(new Stage());
         });

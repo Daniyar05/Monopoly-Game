@@ -2,10 +2,10 @@ package com.monopoly.game.manager;
 
 import com.monopoly.game.component.area.PropertyTile;
 import com.monopoly.game.component.area.Tile;
-import com.monopoly.game.component.model.EventEnum;
 import com.monopoly.game.component.model.Player;
 import com.monopoly.game.component.voucher.PayingRent;
 import com.monopoly.game.component.voucher.BuyingProperty;
+import com.monopoly.game.from_Server.message.EventEnum;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -14,12 +14,15 @@ public class TileManager {
     public void move(Tile tile, Player player) {
         if (tile instanceof PropertyTile){
             if (((PropertyTile) tile).getOwner() == null) {
-                if (eventManager.choiceYes(EventEnum.BUY_IT) & player.enoughCash(((PropertyTile) tile).getCost())){
-                    eventManager.notifyAboutAction("Buying tile");
+                EventEnum eventEnum = EventEnum.BUY_IT;
+                eventEnum.setPlayerName(player.getName());
+                if (player.enoughCash(((PropertyTile) tile).getCost()) & eventManager.choiceYes(eventEnum)){
+                    eventManager.notifyAboutAction("Buying tile", player.getName());
+
                     BuyingProperty buyingProperty = new BuyingProperty(player,((PropertyTile) tile).getCost(), (PropertyTile) tile);
                     buyingProperty.execute();
                 } else {
-                    eventManager.notifyAboutAction("Rejection buying tile");
+                    eventManager.notifyAboutAction("Rejection buying tile", player.getName());
                 }
             }else if (!player.equals(((PropertyTile) tile).getOwner())){
                 PayingRent payingRent = new PayingRent(player);

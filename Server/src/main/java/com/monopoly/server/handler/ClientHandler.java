@@ -94,6 +94,9 @@ public class ClientHandler implements Runnable {
                 case TILE_UPDATED -> {
                     String playerName = message.sender();
                 }
+                case NEW_TILE_OWNER -> {
+                    message.content();
+                }
                 case ROLL_DICE -> {
                     int position = getGameManagerServer().move(message.sender());
                     if (position != -1) {
@@ -103,6 +106,10 @@ public class ClientHandler implements Runnable {
                                 String.valueOf(position)
                         ).toString());
                     }
+                }
+                case PLAYER_CHOICE -> {
+                    System.out.println("Сервером получен ответ на PLAYER_CHOICE");
+                    responseMap.put(message.sender(), message.content());
                 }
 
             }

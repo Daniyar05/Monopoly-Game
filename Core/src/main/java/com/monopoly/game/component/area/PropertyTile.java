@@ -17,5 +17,4 @@ public class PropertyTile extends Tile{
         this.cost = new Cash(costAmount);
         this.rent = new Cash(rentAmount);
     }
-
 }

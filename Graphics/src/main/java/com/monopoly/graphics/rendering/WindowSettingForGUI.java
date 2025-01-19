@@ -1,5 +1,6 @@
 package com.monopoly.graphics.rendering;
 
+import com.monopoly.game.component.area.PropertyTile;
 import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.config.TileConfigurator;
 import com.monopoly.game.from_Server.message.GameMessage;
@@ -8,10 +9,7 @@ import com.monopoly.game.from_Server.service.ClientServiceInterface;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -32,6 +30,8 @@ public class WindowSettingForGUI {
 
     // Карта позиций игроков (имя -> позиция)
     private final Map<String, Integer> playerPositions = new HashMap<>();
+    Map<String, String> tileOwners = new HashMap<>(); // Добавьте данные о владельцах клеток
+    Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
 
     public WindowSettingForGUI(int TILE_SIZE, int BOARD_SIZE, int WINDOW_SIZE, int PLAYER_POSITION, Stage primaryStage, ClientServiceInterface clientService, String nickname) {
         this.TILE_SIZE=TILE_SIZE;
@@ -109,6 +109,13 @@ public class WindowSettingForGUI {
         button.setPrefSize(TILE_SIZE, TILE_SIZE);
         button.setOnAction(e -> openTileDescription(tile));
 
+        // Проверяем, куплена ли клетка
+        String owner = tileOwners.get(tile.getName());
+        if (owner != null) {
+            button.setStyle("-fx-background-color: lightblue;"); // Цвет клетки
+            button.setText(button.getText() + "\n(Owner: " + owner + ")");
+        }
+
         // Проверяем, находятся ли игроки на этой клетке
         StringBuilder playersOnTile = new StringBuilder();
         playerPositions.forEach((playerName, position) -> {
@@ -121,7 +128,6 @@ public class WindowSettingForGUI {
         if (!playersOnTile.isEmpty()) {
             button.setText(button.getText() + "\n[" + playersOnTile.toString().trim() + "]");
         }
-
 
         grid.add(button, x, y);
     }
@@ -144,18 +150,13 @@ private int[] calculatePlayerCoordinates(int position) {
     int totalTiles = BOARD_SIZE * 4 - 4; // Общее количество клеток на периметре
     int normalizedPosition = position % totalTiles;
 
-    // Перемещение по периметру
     if (normalizedPosition < BOARD_SIZE) {
-        // Нижняя сторона (справа налево)
         return new int[]{BOARD_SIZE - 1, BOARD_SIZE - 1 - normalizedPosition};
     } else if (normalizedPosition < BOARD_SIZE * 2 - 1) {
-        // Левая сторона (снизу вверх)
         return new int[]{BOARD_SIZE - 1 - (normalizedPosition - (BOARD_SIZE - 1)), 0};
     } else if (normalizedPosition < BOARD_SIZE * 3 - 2) {
-        // Верхняя сторона (слева направо)
         return new int[]{0, normalizedPosition - (BOARD_SIZE * 2 - 2)};
     } else {
-        // Правая сторона (сверху вниз)
         return new int[]{normalizedPosition - (BOARD_SIZE * 3 - 3), BOARD_SIZE - 1};
     }
 }
@@ -171,8 +172,8 @@ private int[] calculatePlayerCoordinates(int position) {
 
     public void update(Stage primaryStage) {
         this.stage=primaryStage;
-        // Основной контейнер
         BorderPane mainLayout = new BorderPane();
+
         // Создание игрового поля
         GridPane grid = new GridPane();
         List<Tile> tiles = TileConfigurator.configureTiles();
@@ -184,6 +185,7 @@ private int[] calculatePlayerCoordinates(int position) {
         settings(grid);
         // Добавление игрового поля в центральную часть
         mainLayout.setCenter(grid);
+        addPlayerInfoPanel(mainLayout, playerBalances);
         // Создание сцены
         Scene scene = new Scene(mainLayout, WINDOW_SIZE, WINDOW_SIZE);
         primaryStage.setTitle("Monopoly Board");
@@ -211,4 +213,26 @@ private int[] calculatePlayerCoordinates(int position) {
         alert.showAndWait();
     }
 
+    private void addPlayerInfoPanel(BorderPane mainLayout, Map<String, Integer> playerBalances) {
+        VBox playerInfoBox = new VBox();
+        playerInfoBox.setSpacing(10); // Отступы между элементами
+        playerInfoBox.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
+
+        playerBalances.forEach((playerName, balance) -> {
+            Button playerInfo = new Button(playerName + ": $" + balance);
+            playerInfo.setStyle("-fx-font-size: 14; -fx-background-color: transparent;");
+            playerInfo.setDisable(true); // Только для отображения
+            playerInfoBox.getChildren().add(playerInfo);
+        });
+
+        mainLayout.setRight(playerInfoBox); // Боковая панель справа
+    }
+    public void updateTileOwner(String[] tile) {
+        // Обновляем владельца клетки
+        tileOwners.put(tile[0], tile[1]);
+        System.out.println("Клетка " + tile[0] + " теперь принадлежит " + tile[1]);
+
+        // Перерисовываем интерфейс
+        update(stage);
+    }
 }

@@ -6,6 +6,7 @@ import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.config.TileConfigurator;
 import com.monopoly.graphics.rendering.EventManagerGUI;
+import com.monopoly.server.services.ClientService;
 import com.monopoly.server.services.ServerService;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class GameManagerServer {
     private Game game;
     private static final int BASE_AMOUNT_CASH = 1500;
     private final List<Player> players;
+    private ServerService serverService;
 
     public GameManagerServer() {
         this.players = new ArrayList<>();
@@ -33,10 +35,11 @@ public class GameManagerServer {
     public void startGame() {
 //        ServerService.broadcast(new GameMessage(PreparationMessageType.GAME_START, getPlayerNames(),"").toString());
         if (game == null) {
+            EventManagerGUI eventManager = new EventManagerGUI(serverService); //TODO исправить null - затычка
             this.game = new Game(ConfigurationGame.builder()
                     .players(players)
                     .tiles(TileConfigurator.configureTiles())
-                    .build(), new EventManagerGUI());
+                    .build(), eventManager); //TODO  это окно только на сервере запускается!
             game.start();
         } else {
             System.out.println("Game is already running");
@@ -62,5 +65,9 @@ public class GameManagerServer {
         for (String playerName : playerNames) {
             addPlayer(playerName);
         }
+    }
+
+    public void setServerService(ServerService serverService) {
+        this.serverService=serverService;
     }
 }
