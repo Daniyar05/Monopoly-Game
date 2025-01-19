@@ -24,14 +24,22 @@ public class ClientEventManager implements EventManager {
 
     @Override
     public boolean choiceYes(EventEnum question) {
+        return choiceYes(question, new ChoiceHandler() {
+            @Override
+            public void handle(boolean userChoice) {
+                System.out.println("Пользователь выбрал: " + userChoice);
+                // После завершения выбора вызываем sendCommand
+                sendCommand(new GameMessage(MessageType.PLAYER_CHOICE, nickname, Boolean.toString(userChoice)));
+            }
+        });
+    }
+    interface ChoiceHandler {
+        void handle(boolean userChoice);
+    }
+    public boolean choiceYes(EventEnum question, ChoiceHandler choiceHandler) {
         System.out.println("Запустил вопросник");
 
-        // Используем CountDownLatch для синхронизации
-        final CountDownLatch latch = new CountDownLatch(1);
-
         // Переменная для хранения ответа
-        final boolean[] userChoice = new boolean[1];
-
         // Создаем диалоговое окно в UI-потоке
         Platform.runLater(() -> {
             System.out.println("Создание Alert");
@@ -50,25 +58,14 @@ public class ClientEventManager implements EventManager {
             // Добавляем обработчик выбора
             alert.setOnCloseRequest(event -> {
                 ButtonType result = alert.getResult();
-                userChoice[0] = result == yesButton;
-                latch.countDown();  // Сигнализируем о завершении выбора
+                boolean userChoice = result == yesButton;
+                choiceHandler.handle(userChoice);
             });
         });
+        return false;
 
-        try {
-            // Ожидаем, пока пользователь не сделает выбор
-            latch.await(); // Блокируем текущий поток до завершения
-            System.out.println("Пользователь выбрал: " + userChoice[0]);
-
-            // Отправляем команду на сервер
-            sendCommand(new GameMessage(MessageType.PLAYER_CHOICE, nickname, Boolean.toString(userChoice[0])));
-
-            return userChoice[0];
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Ошибка при ожидании ответа", e);
-        }
     }
+
 
 
     @Override
@@ -84,6 +81,7 @@ public class ClientEventManager implements EventManager {
     }
 
     public void sendCommand(GameMessage message) {
+        System.out.println("Отправленно на сервер");
         out.println(message.toString());
     }
 }

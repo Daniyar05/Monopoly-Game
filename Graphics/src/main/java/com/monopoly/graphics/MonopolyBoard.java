@@ -5,6 +5,7 @@ import com.monopoly.game.component.model.Player;
 import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.config.TileConfigurator;
+import com.monopoly.game.manager.EventManagerConsole;
 import com.monopoly.graphics.rendering.EventManagerGUI;
 import com.monopoly.graphics.rendering.WindowSettings;
 import javafx.application.Application;
@@ -28,7 +29,7 @@ public class MonopolyBoard extends Application {
                 .players(List.of(player1, player2))
                 .tiles(TileConfigurator.configureTiles())
                 .build(),
-                new EventManagerGUI(null));
+                new EventManagerConsole());
         game.start();
 
         WindowSettings windowSettings = new WindowSettings(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, primaryStage, game);
