@@ -20,7 +20,7 @@ public class TileManager {
                 eventEnum.setPlayerName(player.getName());
                 if (player.enoughCash(((PropertyTile) tile).getCost()) & eventManager.choiceYes(eventEnum)){
                     eventManager.notifyAboutAction("Buying tile", player.getName()); // FIXME - удалить
-                    eventManager.sendCommand(new GameMessage(MessageType.NEW_TILE_OWNER, player.getName(), tile.getName()));
+                    eventManager.sendCommand(new GameMessage(MessageType.NEW_TILE_OWNER, player.getName(), String.valueOf(tile.getPosition())));
 
                     BuyingProperty buyingProperty = new BuyingProperty(player,((PropertyTile) tile).getCost(), (PropertyTile) tile);
                     buyingProperty.execute();

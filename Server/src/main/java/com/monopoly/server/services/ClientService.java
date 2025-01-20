@@ -138,7 +138,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                 switch (prepType) {
                     case PLAYER_MOVED:
                         if(!"-1".equals(gameMessage.content())) {
-                            gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
+                            gameGUI.updatePlayerPosition(gameMessage.sender(), gameMessage.content());
                         }
                         break;
                     case TILE_UPDATED:

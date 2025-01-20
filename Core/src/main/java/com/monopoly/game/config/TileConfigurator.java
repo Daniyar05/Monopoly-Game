@@ -39,4 +39,13 @@ public class TileConfigurator {
                 new PropertyTile(28, "Boardwalk", 400,50)
         );
     }
+
+    public static Tile getTileByPosition(int position) {
+        List<Tile> tiles = configureTiles();
+        if (position < 0 || position >= tiles.size()) {
+            System.err.println("Ошибка: Позиция " + position + " выходит за пределы игрового поля!");
+            return null;
+        }
+        return tiles.get(position);
+    }
 }

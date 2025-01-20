@@ -34,23 +34,11 @@ public class GameGUI extends Application {
         this.windowSetting = new WindowSettingForGUI(TILE_SIZE, BOARD_SIZE, WINDOW_SIZE,PLAYER_POSITION, stage, clientService, playerName);
     }
 
-//    public void updateWindow(){
-//        this.windowSetting.update(stage);
-//    }
-
     public static void main(String[] args) {
         launch(args);
     }
-//    public void sendMoveCommand(String moveData) {
-////        clientService.sendCommand("MOVE " + moveData);
-//        clientService.sendCommand(new GameMessage(
-//                MessageType.PLAYER_MOVED,
-//                playerName,
-//                //FIXME добавить полезную информацию (желательно систематизировать вложенным запросом
-//                moveData
-//
-//        ));
-//
-//    }
 
+    public void updatePlayerPosition(String sender, String content) {
+        windowSetting.updatePlayerPosition(sender, content);
+    }
 }
