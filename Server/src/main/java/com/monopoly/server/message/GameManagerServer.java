@@ -54,9 +54,9 @@ public class GameManagerServer {
 //        return game;
 //    }
 
-    public int move(String sender) {
+    public int move(String sender, int step) {
         if (game.getNowPlayer().getName().equals(sender)){
-            return game.move();
+            return game.move(step);
         }
         return -1;
     }

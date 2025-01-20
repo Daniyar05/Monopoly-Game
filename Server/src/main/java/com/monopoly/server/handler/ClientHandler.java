@@ -99,7 +99,7 @@ public class ClientHandler implements Runnable {
                 }
                 case ROLL_DICE -> {
                     new Thread(() -> {
-                        int position = getGameManagerServer().move(message.sender());
+                        int position = getGameManagerServer().move(message.sender(), Integer.parseInt(message.content()));
                         if (position != -1) {
                             broadcast(new GameMessage(
                                     MessageType.PLAYER_MOVED,

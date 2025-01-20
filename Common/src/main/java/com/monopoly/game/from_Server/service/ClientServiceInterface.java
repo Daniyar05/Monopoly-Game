@@ -7,7 +7,7 @@ public interface ClientServiceInterface {
 
     void sendEventRequest(EventEnum question); // Отправить запрос клиенту
     boolean hasResponse(); // Проверить, есть ли ответ
-    boolean getResponse(); // Получить ответ клиента
+    boolean getResponse(); // Получить ответ
     void sendNotification(String message); // Отправить уведомление клиенту
 
 //    void sendMessage(String s);

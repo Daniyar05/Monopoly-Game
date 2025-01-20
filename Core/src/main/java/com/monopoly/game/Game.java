@@ -32,8 +32,18 @@ public class Game {
     }
     public int move(){
         if (GameStatus.WAITING.equals(gameStatus)){
+            System.out.println("Waiting for move in old function");
             gameStatus = GameStatus.IN_PROGRESS;
             int position = gameManager.move();
+            gameStatus=GameStatus.WAITING;
+            return position;
+        }
+        return -1;
+    }
+    public int move(int step){
+        if (GameStatus.WAITING.equals(gameStatus)){
+            gameStatus = GameStatus.IN_PROGRESS;
+            int position = gameManager.move(step);
             gameStatus=GameStatus.WAITING;
             return position;
         }

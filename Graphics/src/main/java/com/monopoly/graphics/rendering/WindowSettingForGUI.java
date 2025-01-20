@@ -6,14 +6,20 @@ import com.monopoly.game.config.TileConfigurator;
 import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.service.ClientServiceInterface;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.HashMap;
 import java.util.List;
@@ -198,8 +204,8 @@ private int[] calculatePlayerCoordinates(int position) {
         createBoard(grid, tiles);
 
 //        createDice(game,grid, 2,2);
-        createDiceButton(grid, BOARD_SIZE / 2, BOARD_SIZE / 2);
-
+//        createDiceButton(grid, BOARD_SIZE / 2, BOARD_SIZE / 2);
+        createAnimatedDice(grid, BOARD_SIZE / 2, BOARD_SIZE / 2);
         settings(grid);
         // Добавление игрового поля в центральную часть
         mainLayout.setCenter(grid);
@@ -253,4 +259,48 @@ private int[] calculatePlayerCoordinates(int position) {
         // Перерисовываем интерфейс
         update(stage);
     }
+
+
+    private void createAnimatedDice(GridPane grid, int x, int y) {
+        // Загружаем изображения граней кубика
+        System.out.println("createAnimatedDice");
+        Image[] diceImages = new Image[6];
+        for (int i = 1; i <= 6; i++) {
+            diceImages[i - 1] = new Image(getClass().getResourceAsStream("/dice" + i + ".png"));
+        }
+
+        // Компонент для отображения кубика
+        ImageView diceView = new ImageView(diceImages[0]);
+        diceView.setFitWidth(TILE_SIZE);
+        diceView.setFitHeight(TILE_SIZE);
+
+        // Анимация смены граней кубика
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+            int randomFace = (int) (Math.random() * 6);
+            diceView.setImage(diceImages[randomFace]);
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+
+        // Обработчик нажатия на кубик
+        diceView.setOnMouseClicked(e -> {
+            if (timeline.getStatus() == Animation.Status.RUNNING) {
+                timeline.stop(); // Останавливаем анимацию
+                int rolledValue = (int) (Math.random() * 6) + 1; // Случайное число от 1 до 6
+                diceView.setImage(diceImages[rolledValue - 1]);
+
+                // Отправка значения на сервер
+                clientService.sendCommand(new GameMessage(
+                        MessageType.ROLL_DICE,
+                        nickname,
+                        String.valueOf(rolledValue)
+                ));
+            } else {
+                timeline.play(); // Запускаем анимацию
+            }
+        });
+
+        // Добавляем кубик в сетку
+        grid.add(diceView, x, y);
+    }
+
 }
