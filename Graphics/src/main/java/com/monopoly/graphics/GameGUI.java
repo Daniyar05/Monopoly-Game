@@ -9,9 +9,9 @@ import javafx.stage.Stage;
 
 
 public class GameGUI extends Application {
-    private static final int TILE_SIZE = 100; // Размер одной клетки
-    private static final int BOARD_SIZE = 8; // Количество клеток на стороне
-    private static final int WINDOW_SIZE = 800; // Фиксированный размер окна
+    private static final int TILE_SIZE = 90; // Размер одной клетки
+    private static final int BOARD_SIZE = 11; // Количество клеток на стороне
+    private static final int WINDOW_SIZE = 990; // Фиксированный размер окна
     private static final int PLAYER_POSITION = 0; // Пример позиции игрока
     private final ClientServiceInterface clientService;
 

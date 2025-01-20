@@ -3,21 +3,21 @@ package com.monopoly.graphics.component;
 import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.service.ClientServiceInterface;
-import com.monopoly.graphics.rendering.ClientEventManager;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.*;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
-
 
 public class Dice {
 
     private final int TILE_SIZE;
-    private ClientServiceInterface clientService;
-    private String nickname;
+    private final ClientServiceInterface clientService;
+    private final String nickname;
+    private Canvas diceCanvas; // Canvas для рисования кубика
+    private Timeline animationTimeline;
 
     public Dice(int TILE_SIZE, ClientServiceInterface clientService, String nickname) {
         this.TILE_SIZE = TILE_SIZE;
@@ -26,45 +26,58 @@ public class Dice {
     }
 
     public void createAnimatedDice(GridPane grid, int x, int y) {
+        // Инициализируем Canvas для рисования кубика
+        diceCanvas = new Canvas(TILE_SIZE, TILE_SIZE);
+        GraphicsContext gc = diceCanvas.getGraphicsContext2D();
+
         // Загружаем изображения граней кубика
-        System.out.println("createAnimatedDice");
         Image[] diceImages = new Image[6];
         for (int i = 1; i <= 6; i++) {
             diceImages[i - 1] = new Image(getClass().getResourceAsStream("/dice" + i + ".png"));
         }
 
-        // Компонент для отображения кубика
-        ImageView diceView = new ImageView(diceImages[0]);
-        diceView.setFitWidth(TILE_SIZE);
-        diceView.setFitHeight(TILE_SIZE);
+        // Рисуем изначальное состояние кубика (грань "1")
+        drawDiceFace(gc, diceImages[0]);
 
         // Анимация смены граней кубика
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+        animationTimeline = new Timeline(new KeyFrame(Duration.millis(100), e -> {
             int randomFace = (int) (Math.random() * 6);
-            diceView.setImage(diceImages[randomFace]);
+            drawDiceFace(gc, diceImages[randomFace]); // Рисуем текущую грань кубика
         }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
+        animationTimeline.setCycleCount(Timeline.INDEFINITE);
 
-        // Обработчик нажатия на кубик
-        diceView.setOnMouseClicked(e -> {
-            if (timeline.getStatus() == Animation.Status.RUNNING) {
-                timeline.stop(); // Останавливаем анимацию
-                int rolledValue = (int) (Math.random() * 6) + 1; // Случайное число от 1 до 6
-                diceView.setImage(diceImages[rolledValue - 1]);
+        diceCanvas.setOnMouseClicked(e -> {
+            if (animationTimeline.getStatus() == Animation.Status.RUNNING) {
+                return;
+            }
 
-                // Отправка значения на сервер
+            animationTimeline.play();
+
+            new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
+                animationTimeline.stop();
+                int rolledValue = (int) (Math.random() * 6) + 1;
+                drawDiceFace(gc, diceImages[rolledValue - 1]);
                 clientService.sendCommand(new GameMessage(
                         MessageType.ROLL_DICE,
                         nickname,
                         String.valueOf(rolledValue)
                 ));
-            } else {
-                timeline.play(); // Запускаем анимацию
-            }
+            })).play();
         });
 
-        // Добавляем кубик в сетку
-        grid.add(diceView, x, y);
+        grid.add(diceCanvas, x, y);
     }
 
+    private void drawDiceFace(GraphicsContext gc, Image diceFace) {
+        // Очищаем Canvas
+        gc.clearRect(0, 0, TILE_SIZE, TILE_SIZE);
+
+        // Рисуем границу кубика
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(3);
+        gc.strokeRect(0, 0, TILE_SIZE, TILE_SIZE);
+
+        // Рисуем изображение грани кубика
+        gc.drawImage(diceFace, 5, 5, TILE_SIZE - 10, TILE_SIZE - 10);
+    }
 }
