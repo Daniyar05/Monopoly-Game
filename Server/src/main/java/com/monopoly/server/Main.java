@@ -12,6 +12,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+    private final int port = 12355;
 
     private static final GameManagerServer gameManagerServer = new GameManagerServer();
 
@@ -37,11 +38,11 @@ public class Main extends Application {
     }
 
     private void initializeHost(Stage primaryStage, String nickname) {
-        ServerService serverService = new ServerService(1234);
+        ServerService serverService = new ServerService(port);
         new Thread(serverService).start();
         gameManagerServer.setServerService(serverService);
         Stage waitingRoomStage = new Stage();
-        ClientService clientService = new ClientService("127.0.0.1", 1234, nickname, waitingRoomStage);
+        ClientService clientService = new ClientService("127.0.0.1", port, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
 //        gameManagerServer.addPlayer(nickname);
@@ -68,7 +69,7 @@ public class Main extends Application {
         }
 
         Stage waitingRoomStage = new Stage();
-        ClientService clientService = new ClientService(hostIp, 1234, nickname, waitingRoomStage);
+        ClientService clientService = new ClientService(hostIp, port, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
 
