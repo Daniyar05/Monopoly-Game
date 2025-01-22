@@ -121,8 +121,7 @@ public class WindowSettingForGUI {
         // Проверяем, куплена ли клетка
         String owner = tileOwners.get(tile.getName());
         if (owner != null) {
-            button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
-            button.setText(button.getText() + "\n(Owner: " + owner + ")");
+            setOwnerStyleForButton(button,tile,owner);
         } else {
             setDefaultStyleForButton(button);
         }
@@ -136,7 +135,7 @@ public class WindowSettingForGUI {
 
         // Если есть игроки на клетке, добавляем их в отображение
         if (!playersOnTile.isEmpty()) {
-            button.setText(button.getText() + "\n[" + playersOnTile.toString().trim() + "]");
+            setPlayerOnTileStyleForButton(button, playersOnTile.toString());
         }
         grid.add(button, x, y);
         return button;
@@ -192,7 +191,7 @@ public class WindowSettingForGUI {
 
         // Создание игрового поля
         GridPane grid = new GridPane();
-        grid.setGridLinesVisible(true);
+//        grid.setGridLinesVisible(true);
 
         List<Tile> tiles = TileConfigurator.configureTiles();
         createBoard(grid, tiles);
@@ -276,18 +275,21 @@ public class WindowSettingForGUI {
 
         // Если есть игроки на клетке, добавляем их в текст
         if (!playersOnTile.isEmpty()) {
-            button.setText(button.getText() + "\n[" + playersOnTile.toString().trim() + "]");
+            setPlayerOnTileStyleForButton(button, playersOnTile.toString());
         }
     }
 
     private void setDefaultStyleForButton(Button button) {
-        button.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: black;"); // Прозрачная кнопка
+        button.setStyle("-fx-background-color: transparent;"); // Прозрачная кнопка //  -fx-border-color: black; -fx-text-fill: black
     }
     private void setOwnerStyleForButton(Button button, Tile tile, String owner) {
         button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
         button.setText(tile.getName() + "\n(Owner: " + owner + ")");
     }
+    private void setPlayerOnTileStyleForButton(Button button, String playerName) {
+        button.setText(button.getText() + "\n[" + playerName + "]");
 
+    }
 
 
     public void displayGameOver(String winner) {
