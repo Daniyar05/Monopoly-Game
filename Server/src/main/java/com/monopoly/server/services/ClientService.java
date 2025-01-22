@@ -163,7 +163,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                     case NOTIFICATION:
                         System.out.println("Пришло сообщение " + gameMessage);
                         if (nickname.equals(gameMessage.sender())) {
-//                            clientEventManager.notifyAboutAction(gameMessage.content(), gameMessage.sender());
+                            clientEventManager.notifyAboutAction(gameMessage.content(), gameMessage.sender());
                         }
                         break;
 

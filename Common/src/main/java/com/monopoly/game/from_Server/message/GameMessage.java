@@ -26,11 +26,5 @@ public record GameMessage(Object type, String sender, String content) {
             return MessageType.valueOf(typeName);
         }
     }
-    public String[] getSplitContent(){
-        return content.split("\\$");
-    }
 
-    public static String stringOf(String[] strings){
-        return String.join("$", strings);
-    }
 }

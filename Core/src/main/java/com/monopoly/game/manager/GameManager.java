@@ -38,11 +38,11 @@ public class GameManager {
 
     public int move(int step){
         Player playerNow = playerManager.nowPlayer();
-        eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' start moved", playerNow.getName());
+//        eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' start moved", playerNow.getName());
         int positionPlayer = playerManager.move(step);
         int positionOnBoard = boardManager.move(positionPlayer, playerNow);
         moveFinish();
-        eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' finish moved", playerNow.getName());
+//        eventManager.notifyAboutAction("Player - '"+playerNow.getName()+"' finish moved", playerNow.getName());
         return positionOnBoard;
     }
 

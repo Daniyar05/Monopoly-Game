@@ -249,6 +249,7 @@ public class WindowSettingForGUI {
     }
 
     public void updateButtonTile(int tilePosition) {
+        System.out.println(tilePosition);
         // Получаем кнопку, соответствующую позиции клетки
         Button button = tileButtons.get(tilePosition);
         if (button == null) {
@@ -269,6 +270,7 @@ public class WindowSettingForGUI {
         StringBuilder playersOnTile = new StringBuilder();
         playerPositions.forEach((playerName, playerPosition) -> {
             if (playerPosition == tilePosition) {
+                System.out.println(playerName);
                 playersOnTile.append(playerName).append(" ");
             }
         });
@@ -280,6 +282,7 @@ public class WindowSettingForGUI {
     }
 
     private void setDefaultStyleForButton(Button button) {
+        button.setText("");
         button.setStyle("-fx-background-color: transparent;"); // Прозрачная кнопка //  -fx-border-color: black; -fx-text-fill: black
     }
     private void setOwnerStyleForButton(Button button, Tile tile, String owner) {
@@ -287,7 +290,7 @@ public class WindowSettingForGUI {
         button.setText(tile.getName() + "\n(Owner: " + owner + ")");
     }
     private void setPlayerOnTileStyleForButton(Button button, String playerName) {
-        button.setText(button.getText() + "\n[" + playerName + "]");
+        button.setText(button.getText()+"\n[" + playerName + "]");
 
     }
 
