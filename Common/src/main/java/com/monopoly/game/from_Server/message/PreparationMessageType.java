@@ -8,9 +8,5 @@ public enum PreparationMessageType {
     ALL_PLAYERS_READY,
     GAME_START,       // Команда на старт игры
     GO_START,
-    PLAYER_JOIN;
-
-
-
-
+    PLAYER_JOIN
 }

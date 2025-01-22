@@ -20,6 +20,8 @@ public record GameEventMessage(Object type, String sender, Object content) {
         );
     }
 
+
+
     private static Object determineType(String typeName) {
         try {
             return PreparationMessageType.valueOf(typeName);

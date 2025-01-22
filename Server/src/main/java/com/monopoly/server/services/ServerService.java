@@ -50,6 +50,7 @@ public class ServerService implements Runnable, ServerServiceInterface {
                 new Thread(clientHandler).start();
             } catch (IOException e) {
                 System.err.println("Ошибка при подключении клиента: " + e.getMessage());
+
             }
         }
     }
