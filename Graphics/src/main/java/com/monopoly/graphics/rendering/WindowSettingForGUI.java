@@ -30,11 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 public class WindowSettingForGUI {
-    private final int TILE_SIZE; // Размер одной клетки
     private final int BOARD_SIZE; // Количество клеток на стороне
     private final int WINDOW_SIZE; // Фиксированный размер окна
-    private final double WINDOW_SPECIAL_GRID_PANE_SIZE_IN_PERCENT=125.0;
-//    private int PLAYER_POSITION = 0; // Пример позиции игрока
+    private final double DIFFERENCE_IN_SIZE=0.5;
     private final ClientServiceInterface clientService;
     private final String nickname;
     private Stage stage;
@@ -48,7 +46,6 @@ public class WindowSettingForGUI {
     Map<Integer, Button> tileButtons = new HashMap<>();
 
     public WindowSettingForGUI(int TILE_SIZE, int BOARD_SIZE, int WINDOW_SIZE, int PLAYER_POSITION, Stage primaryStage, ClientServiceInterface clientService, String nickname) {
-        this.TILE_SIZE=TILE_SIZE;
         this.BOARD_SIZE=BOARD_SIZE;
         this.WINDOW_SIZE=WINDOW_SIZE;
         this.clientService = clientService;
@@ -83,49 +80,43 @@ public class WindowSettingForGUI {
     }
 
 
-    private void settings(GridPane grid) {
-        double topBottomHeightPercent = 20.0; // Процент высоты для верхней и нижней строки
-        double middleHeightPercent = (100.0 - 2 * topBottomHeightPercent) / (BOARD_SIZE - 2); // Остальные строки
+    private void settings(GridPane grid, double newWidth, double newHeight) {
+        double tileWidth = newWidth / BOARD_SIZE;
+        double tileHeight = newHeight / BOARD_SIZE;
 
-
+        grid.getColumnConstraints().clear();
+        grid.getRowConstraints().clear();
 
         for (int i = 0; i < BOARD_SIZE; i++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
-            colConstraints.setPercentWidth(100.0 / BOARD_SIZE);
-            colConstraints.setHgrow(Priority.ALWAYS); // Растягиваем столбцы
-            grid.getColumnConstraints().add(colConstraints);
-
-            RowConstraints rowConstraints = new RowConstraints();
-            if (i == 0 || i == BOARD_SIZE - 1) { // Верхняя и нижняя строки
-                rowConstraints.setPercentHeight(topBottomHeightPercent);
-            } else { // Остальные строки
-
-                rowConstraints.setPercentHeight(middleHeightPercent);
+            if (i == 0 || i == BOARD_SIZE-1){
+                colConstraints.setPrefWidth(tileWidth+DIFFERENCE_IN_SIZE*tileWidth);
+            } else {
+                colConstraints.setPrefWidth(tileWidth);
             }
-//            rowConstraints.setPercentHeight(100.0 / BOARD_SIZE);
-            rowConstraints.setVgrow(Priority.ALWAYS); // Растягиваем строки
+            colConstraints.setHgrow(Priority.ALWAYS); // Разрешаем колонкам растягиваться
+            grid.getColumnConstraints().add(colConstraints);
+        }
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            RowConstraints rowConstraints = new RowConstraints();
+            if (i == 0 || i == BOARD_SIZE-1){
+                rowConstraints.setPrefHeight(tileHeight+DIFFERENCE_IN_SIZE*tileHeight);
+            } else {
+                rowConstraints.setPrefHeight(tileHeight);
+            }
+            rowConstraints.setVgrow(Priority.ALWAYS); // Разрешаем строкам растягиваться
             grid.getRowConstraints().add(rowConstraints);
         }
-        // Настройка пропорций ячеек
-//        for (int i = 0; i < BOARD_SIZE; i++) {
-//            ColumnConstraints colConstraints = new ColumnConstraints();
-//
-//            colConstraints.setPercentWidth(100.0 / BOARD_SIZE);
-//            grid.getColumnConstraints().add(colConstraints);
-//
-//            RowConstraints rowConstraints = new RowConstraints();
-//            rowConstraints.setPercentHeight(100.0 / BOARD_SIZE);
-//            grid.getRowConstraints().add(rowConstraints);
-//        }
+
     }
 
 
     private Button createTileButton(Tile tile, GridPane grid, int x, int y) {
-        Button button = new Button(tile.getName());
+        Button button = new Button();
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         button.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
-//        button.setPrefSize(TILE_SIZE, TILE_SIZE);
         button.setOnAction(e -> openTileDescription(tile));
         // Проверяем, куплена ли клетка
         String owner = tileOwners.get(tile.getName());
@@ -152,9 +143,6 @@ public class WindowSettingForGUI {
     }
 
 
-//    private Integer coordinateFromName(String tileName) {
-//        return
-//    }
 
     private boolean isPlayerOnTile(String playerName, int x, int y) {
         Integer playerPosition = playerPositions.get(playerName);
@@ -198,29 +186,18 @@ public class WindowSettingForGUI {
         background.setPreserveRatio(false);
         background.setFitWidth(WINDOW_SIZE);
         background.setFitHeight(WINDOW_SIZE);
-
         // Оборачиваем фон и игровое поле в StackPane
         StackPane layeredPane = new StackPane();
         layeredPane.getChildren().add(background);
 
         // Создание игрового поля
         GridPane grid = new GridPane();
-
-        grid.getRowConstraints().forEach(rc ->
-                System.out.println("Row Percent Height: " + rc.getPercentHeight()));
-//
-//        GridPane.setHgrow(grid, Priority.ALWAYS);
-//        GridPane.setVgrow(grid, Priority.ALWAYS);
-//        StackPane.setAlignment(grid, Pos.CENTER);
-//        grid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-//        grid.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
         grid.setGridLinesVisible(true);
 
         List<Tile> tiles = TileConfigurator.configureTiles();
         createBoard(grid, tiles);
         dice.createAnimatedDice(grid, BOARD_SIZE / 2+1, BOARD_SIZE / 2+1);
-        settings(grid);
-        // Добавление игрового поля в центральную часть
+
         layeredPane.getChildren().add(grid);
         mainLayout.setCenter(layeredPane);
 
@@ -231,54 +208,20 @@ public class WindowSettingForGUI {
         primaryStage.setMinWidth(500); // Минимальная ширина окна
         primaryStage.setMinHeight(500); // Минимальная высота окна
         primaryStage.setScene(scene);
-        grid.getRowConstraints().forEach(rc ->
-                System.out.println("Row Percent Height: " + rc.getPercentHeight()));
-
-        scene.widthProperty().addListener((obs, oldVal, newVal) -> {
-            layeredPane.setPrefWidth(newVal.doubleValue());
-            layeredPane.setMaxWidth(newVal.doubleValue());
-        });
-        scene.heightProperty().addListener((obs, oldVal, newVal) -> {
-            layeredPane.setPrefHeight(newVal.doubleValue());
-            layeredPane.setMaxHeight(newVal.doubleValue());
-        });
 
         scene.widthProperty().addListener((obs, oldWidth, newWidth) ->
-                adjustLayout(layeredPane, grid, background, newWidth.doubleValue(), scene.getHeight()));
+                adjustLayout(grid, background, newWidth.doubleValue(), scene.getHeight()));
 
         scene.heightProperty().addListener((obs, oldHeight, newHeight) ->
-                adjustLayout(layeredPane, grid, background, scene.getWidth(), newHeight.doubleValue()));
+                adjustLayout(grid, background, scene.getWidth(), newHeight.doubleValue()));
         primaryStage.show();
     }
 
-    private void adjustLayout(StackPane layeredPane, GridPane grid, ImageView background, double newWidth, double newHeight) {
+    private void adjustLayout(GridPane grid, ImageView background, double newWidth, double newHeight) {
         // Масштабируем фоновое изображение
         background.setFitWidth(newWidth);
         background.setFitHeight(newHeight);
-
-        // Рассчитываем размеры одной клетки
-        double tileWidth = newWidth / BOARD_SIZE;
-        double tileHeight = newHeight / BOARD_SIZE;
-
-        // Очищаем старые констрейнты колонок и строк
-        grid.getColumnConstraints().clear();
-        grid.getRowConstraints().clear();
-
-        // Обновляем констрейнты колонок
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            ColumnConstraints colConstraints = new ColumnConstraints();
-            colConstraints.setPrefWidth(tileWidth);
-            colConstraints.setHgrow(Priority.ALWAYS); // Разрешаем колонкам растягиваться
-            grid.getColumnConstraints().add(colConstraints);
-        }
-
-        // Обновляем констрейнты строк
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setPrefHeight(tileHeight);
-            rowConstraints.setVgrow(Priority.ALWAYS); // Разрешаем строкам растягиваться
-            grid.getRowConstraints().add(rowConstraints);
-        }
+        settings(grid, newWidth, newHeight);
 
     }
 
@@ -313,19 +256,14 @@ public class WindowSettingForGUI {
             System.err.println("Кнопка для позиции " + tilePosition + " не найдена!");
             return;
         }
-
-        // Получаем владельца клетки
         Tile tile = TileConfigurator.getTileByPosition(tilePosition); // Предполагается, что есть метод для получения клетки
-
         String owner = tileOwners.get(tile.getName());
 
         // Обновляем стиль и текст кнопки, если есть владелец
         if (owner != null) {
-            button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
-            button.setText(tile.getName() + "\n(Owner: " + owner + ")");
+            setOwnerStyleForButton(button, tile, owner);
         } else {
             setDefaultStyleForButton(button);
-            button.setText(tile.getName());
         }
 
         // Проверяем, находятся ли игроки на этой клетке
@@ -340,16 +278,16 @@ public class WindowSettingForGUI {
         if (!playersOnTile.isEmpty()) {
             button.setText(button.getText() + "\n[" + playersOnTile.toString().trim() + "]");
         }
-
-        // Логируем обновление
-//        System.out.println("Обновление клетки: " + tilePosition + " -> " + button.getText());
     }
 
     private void setDefaultStyleForButton(Button button) {
-//        button.setStyle("-fx-background-color: #FFFFFF;"); // Устанавливаем стандартный стиль
         button.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: black;"); // Прозрачная кнопка
-
     }
+    private void setOwnerStyleForButton(Button button, Tile tile, String owner) {
+        button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
+        button.setText(tile.getName() + "\n(Owner: " + owner + ")");
+    }
+
 
 
     public void displayGameOver(String winner) {
