@@ -7,5 +7,6 @@ public enum MessageType {
     GAME_OVER,
     ROLL_DICE,
     PLAYER_CHOICE,
-    NOTIFICATION
+    NOTIFICATION,
+    UPDATE_BALANCE
 }

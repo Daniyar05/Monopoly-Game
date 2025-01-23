@@ -15,7 +15,8 @@ public class TileManager {
     private final EventManager eventManager;
     public void move(Tile tile, Player player) {
         if (tile instanceof PropertyTile){
-            if (((PropertyTile) tile).getOwner() == null) {
+            Player owner = ((PropertyTile) tile).getOwner();
+            if (owner == null) {
                 EventEnum eventEnum = EventEnum.BUY_IT;
                 eventEnum.setPlayerName(player.getName());
                 if (player.enoughCash(((PropertyTile) tile).getCost()) & eventManager.choiceYes(eventEnum)){
@@ -24,12 +25,27 @@ public class TileManager {
 
                     BuyingProperty buyingProperty = new BuyingProperty(player,((PropertyTile) tile).getCost(), (PropertyTile) tile);
                     buyingProperty.execute();
+                    eventManager.sendCommand(new GameMessage(
+                            MessageType.UPDATE_BALANCE,
+                            player.getName(),
+                            String.valueOf(player.getWallet().getAmount())
+                    ));
                 } else {
                     eventManager.notifyAboutAction("Rejection buying tile", player.getName()); // FIXME - удалить
                 }
-            }else if (!player.equals(((PropertyTile) tile).getOwner())){
+            }else if (!player.equals(owner)){
                 PayingRent payingRent = new PayingRent(player);
-                ((PropertyTile) tile).getOwner().adjustCash(payingRent, ((PropertyTile) tile));
+                owner.adjustCash(payingRent, ((PropertyTile) tile));
+                eventManager.sendCommand(new GameMessage(
+                        MessageType.UPDATE_BALANCE,
+                        player.getName(),
+                        String.valueOf(player.getWallet().getAmount())
+                ));
+                eventManager.sendCommand(new GameMessage(
+                        MessageType.UPDATE_BALANCE,
+                        owner.getName(),
+                        String.valueOf(owner.getWallet().getAmount())
+                ));
             }
         } else {
             tile.execute(player);

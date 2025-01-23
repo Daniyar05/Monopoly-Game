@@ -17,7 +17,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -33,6 +35,8 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private final BlockingQueue<Boolean> responseQueue = new ArrayBlockingQueue<>(1);
     private ClientEventManager clientEventManager;
     private List<String> listPlayers;
+    private Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
+
 
     public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
@@ -126,9 +130,13 @@ public class ClientService implements Runnable, ClientServiceInterface {
             }
         }
     }
+    @Override
+    public Map<String, Integer> getPlayerBalances() {
+        return playerBalances;
+    }
 
     private void processServerUpdate(String message) {
-        if (gameGUI.getWindowSetting() == null) {
+        if (GameMessage.fromString(message).type()!=MessageType.UPDATE_BALANCE && gameGUI.getWindowSetting() == null) {
             System.err.println("WindowSetting не инициализирован.");
             return;
         }
@@ -138,40 +146,44 @@ public class ClientService implements Runnable, ClientServiceInterface {
             // Обработка различных типов обновлений
             if (gameMessage.type() instanceof MessageType prepType) {
                 switch (prepType) {
-                    case PLAYER_MOVED:
+                    case PLAYER_MOVED ->{
                         if(!"-1".equals(gameMessage.content())) {
                             gameGUI.updatePlayerPosition(gameMessage.sender(), gameMessage.content());
                         }
-                        break;
-                    case TILE_UPDATED:
+                    }
+
+                    case TILE_UPDATED->{
                         gameGUI.getWindowSetting().updateTileState(gameMessage.content());
-                        break;
-                    case NEW_TILE_OWNER:
+                    }
+                    case NEW_TILE_OWNER->{
                         gameGUI.getWindowSetting().updateTileOwner(gameMessage);
-                        break;
-                    case GAME_OVER:
+                    }
+                    case GAME_OVER ->{
                         gameGUI.getWindowSetting().displayGameOver(gameMessage.content());
-                        break;
-                    case ROLL_DICE:
+                    }
+                    case ROLL_DICE ->{
                         System.out.println("Каким-то чудом попали не туда");
                         gameGUI.getWindowSetting().updatePlayerPosition(gameMessage.sender(), gameMessage.content());
-                        break;
-                    case PLAYER_CHOICE:
+                    }
+                    case PLAYER_CHOICE ->{
                         System.out.println("Пришло сообщение " + gameMessage);
                         if (nickname.equals(gameMessage.sender())) {
                             clientEventManager.choiceYes(EventEnum.BUY_IT);
                         }
-                        break;
-                    case NOTIFICATION:
+                    }
+                    case NOTIFICATION -> {
                         System.out.println("Пришло сообщение " + gameMessage);
                         if (nickname.equals(gameMessage.sender())) {
                             clientEventManager.notifyAboutAction(gameMessage.content(), gameMessage.sender());
                         }
-                        break;
-
-
-                    default:
+                    }
+                    case UPDATE_BALANCE -> {
+                        playerBalances.put(gameMessage.sender(), Integer.parseInt(gameMessage.content()));
+//                        gameGUI.getWindowSetting().updatePlayerBalance(gameMessage.sender(), Integer.parseInt(gameMessage.content()));
+                    }
+                    default->{
                         System.err.println("Неизвестный тип сообщения: " + gameMessage.type());
+                    }
                 }
             }
         });
@@ -192,4 +204,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
     public List<String> getListPlayers() {
         return listPlayers;
     }
+
+
+
 }

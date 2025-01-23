@@ -6,6 +6,7 @@ import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.config.TileConfigurator;
 import com.monopoly.game.from_Server.message.GameMessage;
+import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.message.PreparationMessageType;
 import com.monopoly.graphics.rendering.EventManagerGUI;
 import com.monopoly.server.services.ClientService;
@@ -13,6 +14,7 @@ import com.monopoly.server.services.ServerService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 
 import static com.monopoly.server.services.ServerService.getPlayerNames;
 
@@ -45,8 +47,16 @@ public class GameManagerServer {
                     .tiles(TileConfigurator.configureTiles())
                     .build(), eventManager);
             game.start();
+
             ServerService.broadcast(new GameMessage(PreparationMessageType.GET_ALL_PLAYERS, "Server",String.join(",", getPlayerNames())).toString());
 
+            for (Player player : players) {
+                ServerService.broadcast(new GameMessage(
+                        MessageType.UPDATE_BALANCE,
+                        player.getName(),
+                        String.valueOf(player.getWallet().getAmount())
+                ).toString());
+            }
         } else {
             System.out.println("Game is already running");
         }
