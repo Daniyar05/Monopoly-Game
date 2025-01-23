@@ -23,6 +23,9 @@ public class BoardManager {
     public void stop() {
 
     }
+    public int tileSize(){
+        return board.getTiles().size();
+    }
 
     public int move(int position, Player player) {
         Tile tile = board.getTile(position);

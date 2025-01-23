@@ -23,6 +23,7 @@ public class AddMoneyCard extends CommunityChestCard {
                 player.getName(),
                 String.valueOf(player.getWallet().getAmount())
         ));
+
         eventManager.sendCommand(new GameMessage(
                 MessageType.NOTIFICATION,
                 player.getName(),

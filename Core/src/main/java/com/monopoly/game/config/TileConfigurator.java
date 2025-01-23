@@ -58,9 +58,7 @@ public class TileConfigurator {
         );
     }
 
-    /**
-     * Получает клетку по её позиции.
-     */
+
     public static Tile getTileByPosition(int position) {
         List<Tile> tiles = configureTiles();
         if (position < 0 || position >= tiles.size()) {

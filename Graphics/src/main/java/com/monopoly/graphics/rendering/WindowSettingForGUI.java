@@ -238,7 +238,7 @@ public class WindowSettingForGUI {
     public void updatePlayerPosition(String playerName, String newPosition) {
         // Получаем старую и новую позиции игрока
         int oldPosition = playerPositions.getOrDefault(playerName, -1);
-        int newTilePosition = Integer.parseInt(newPosition);
+        int newTilePosition = Integer.parseInt(newPosition)%tileButtons.size();
 
         // Обновляем положение игрока
         playerPositions.put(playerName, newTilePosition);
@@ -259,20 +259,21 @@ public class WindowSettingForGUI {
     }
 
     public void updateButtonTile(int tilePosition) {
+        int tilePositionActual = tilePosition%tileButtons.size();
 //        System.out.println(tilePosition);
-        Button button = tileButtons.get(tilePosition);
+        Button button = tileButtons.get(tilePositionActual);
         if (button == null) {
-            System.err.println("Кнопка для позиции " + tilePosition + " не найдена!");
+            System.err.println("Кнопка для позиции " + tilePositionActual + " не найдена!");
             return;
         }
-        Tile tile = TileConfigurator.getTileByPosition(tilePosition); // Предполагается, что есть метод для получения клетки
+        Tile tile = TileConfigurator.getTileByPosition(tilePositionActual); // Предполагается, что есть метод для получения клетки
         String owner = tileOwners.get(tile.getName());
 
         // Проверяем, находятся ли игроки на этой клетке
         List<String> names = new ArrayList<>();
 //        StringBuilder playersOnTile = new StringBuilder();
         playerPositions.forEach((playerName, playerPosition) -> {
-            if (playerPosition == tilePosition) {
+            if (playerPosition == tilePositionActual) {
                 System.out.println(playerName);
                 names.add(playerName);
 //                playersOnTile.append(playerName).append(" ");
