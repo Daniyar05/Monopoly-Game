@@ -28,7 +28,7 @@ public class BoardManager {
         Tile tile = board.getTile(position);
         eventManager.notifyAboutAction("Move on BoardManager - "+tile.getPosition(), player.getName());
         tileManager.move(tile, player);
-        return tile.getPosition();
+        return player.getPosition();
     }
 
     public void moveToJail(Player player){

@@ -16,6 +16,5 @@ public class FreeParkingTile extends Tile{
                 player.getName(),
                 "Отдохни"
         ));
-        return;
     }
 }
