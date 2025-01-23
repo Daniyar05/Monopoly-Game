@@ -5,12 +5,16 @@ import com.monopoly.game.component.model.Player;
 import com.monopoly.game.component.money.Cash;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.config.TileConfigurator;
+import com.monopoly.game.from_Server.message.GameMessage;
+import com.monopoly.game.from_Server.message.PreparationMessageType;
 import com.monopoly.graphics.rendering.EventManagerGUI;
 import com.monopoly.server.services.ClientService;
 import com.monopoly.server.services.ServerService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.monopoly.server.services.ServerService.getPlayerNames;
 
 public class GameManagerServer {
 
@@ -35,12 +39,14 @@ public class GameManagerServer {
     public void startGame() {
 //        ServerService.broadcast(new GameMessage(PreparationMessageType.GAME_START, getPlayerNames(),"").toString());
         if (game == null) {
-            EventManagerGUI eventManager = new EventManagerGUI(serverService); //TODO исправить null - затычка
+            EventManagerGUI eventManager = new EventManagerGUI(serverService);
             this.game = new Game(ConfigurationGame.builder()
                     .players(players)
                     .tiles(TileConfigurator.configureTiles())
-                    .build(), eventManager); //TODO  это окно только на сервере запускается!
+                    .build(), eventManager);
             game.start();
+            ServerService.broadcast(new GameMessage(PreparationMessageType.GET_ALL_PLAYERS, "Server",String.join(",", getPlayerNames())).toString());
+
         } else {
             System.out.println("Game is already running");
         }

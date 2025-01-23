@@ -15,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -25,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,23 +38,39 @@ public class WindowSettingForGUI {
     private final ClientServiceInterface clientService;
     private final String nickname;
     private Stage stage;
-    Dice dice;
+    private final Dice dice;
 
     // Карта позиций игроков (имя -> позиция)
     private final Map<String, Integer> playerPositions = new HashMap<>();
-    Map<String, String> tileOwners = new HashMap<>(); // Добавьте данные о владельцах клеток
-    Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
+    private final Map<String, String> tileOwners = new HashMap<>(); // Добавьте данные о владельцах клеток
+    private final Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
 
-    Map<Integer, Button> tileButtons = new HashMap<>();
-
+    private final Map<Integer, Button> tileButtons = new HashMap<>();
+    private final Map<String, String> playerPathToIco = new HashMap<>(); // Игрок -> путь к его изображению
+    private final List<String> playersNames;
     public WindowSettingForGUI(int TILE_SIZE, int BOARD_SIZE, int WINDOW_SIZE, int PLAYER_POSITION, Stage primaryStage, ClientServiceInterface clientService, String nickname) {
         this.BOARD_SIZE=BOARD_SIZE;
         this.WINDOW_SIZE=WINDOW_SIZE;
         this.clientService = clientService;
         this.nickname = nickname;
+        playersNames= clientService.getListPlayers();
+        addPathToIcoForAllPlayer();
         playerPositions.put(nickname, PLAYER_POSITION);
         dice = new Dice(TILE_SIZE, clientService,nickname);
         update(primaryStage);
+    }
+
+    private void addPathToIcoForAllPlayer() {
+        List<String> tokenPaths = List.of(
+                "/pieces/Car.jpg",
+                "/pieces/Cat.jpg"
+//                "/pieces/Hat.jpg"
+        );
+        for (int i = 0; i < playersNames.size(); i++) {
+            String playerName = playersNames.get(i);
+            String tokenImagePath = tokenPaths.get(i % tokenPaths.size()); // Повторяем пути, если игроков больше, чем фишек
+            registerPlayerPath(playerName, tokenImagePath);
+        }
     }
 
     private void createBoard(GridPane grid, List<Tile> tiles) {
@@ -120,23 +138,14 @@ public class WindowSettingForGUI {
         button.setOnAction(e -> openTileDescription(tile));
         // Проверяем, куплена ли клетка
         String owner = tileOwners.get(tile.getName());
-        if (owner != null) {
-            setOwnerStyleForButton(button,tile,owner);
-        } else {
-            setDefaultStyleForButton(button);
-        }
-        // Проверяем, находятся ли игроки на этой клетке
         StringBuilder playersOnTile = new StringBuilder();
         playerPositions.forEach((playerName, position) -> {
             if (isPlayerOnTile(playerName, x, y)) {
                 playersOnTile.append(playerName).append(" ");
             }
         });
+        addInformAndStyleForButton(button,tile,owner, playersOnTile);
 
-        // Если есть игроки на клетке, добавляем их в отображение
-        if (!playersOnTile.isEmpty()) {
-            setPlayerOnTileStyleForButton(button, playersOnTile.toString());
-        }
         grid.add(button, x, y);
         return button;
     }
@@ -249,8 +258,7 @@ public class WindowSettingForGUI {
     }
 
     public void updateButtonTile(int tilePosition) {
-        System.out.println(tilePosition);
-        // Получаем кнопку, соответствующую позиции клетки
+//        System.out.println(tilePosition);
         Button button = tileButtons.get(tilePosition);
         if (button == null) {
             System.err.println("Кнопка для позиции " + tilePosition + " не найдена!");
@@ -258,13 +266,6 @@ public class WindowSettingForGUI {
         }
         Tile tile = TileConfigurator.getTileByPosition(tilePosition); // Предполагается, что есть метод для получения клетки
         String owner = tileOwners.get(tile.getName());
-
-        // Обновляем стиль и текст кнопки, если есть владелец
-        if (owner != null) {
-            setOwnerStyleForButton(button, tile, owner);
-        } else {
-            setDefaultStyleForButton(button);
-        }
 
         // Проверяем, находятся ли игроки на этой клетке
         StringBuilder playersOnTile = new StringBuilder();
@@ -275,24 +276,117 @@ public class WindowSettingForGUI {
             }
         });
 
-        // Если есть игроки на клетке, добавляем их в текст
+        addInformAndStyleForButton(button,tile,owner, playersOnTile);
+
+    }
+
+    private void addInformAndStyleForButton(Button button, Tile tile, String owner, StringBuilder playersOnTile) {
+        if (owner != null) {
+            setOwnerStyleForButton(button,tile,owner);
+        } else {
+            setDefaultStyleForButton(button);
+        }
         if (!playersOnTile.isEmpty()) {
             setPlayerOnTileStyleForButton(button, playersOnTile.toString());
         }
     }
 
     private void setDefaultStyleForButton(Button button) {
+        button.setGraphic(null);
         button.setText("");
         button.setStyle("-fx-background-color: transparent;"); // Прозрачная кнопка //  -fx-border-color: black; -fx-text-fill: black
     }
-    private void setOwnerStyleForButton(Button button, Tile tile, String owner) {
-        button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
-        button.setText(tile.getName() + "\n(Owner: " + owner + ")");
-    }
-    private void setPlayerOnTileStyleForButton(Button button, String playerName) {
-        button.setText(button.getText()+"\n[" + playerName + "]");
+    private void setOwnerStyleForButton(Button fieldButton, Tile tile, String owner) {
+        // Создаём кнопку-круг для владельца
+        fieldButton.setGraphic(null);
 
+        Button ownerButton = new Button();
+        ownerButton.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + "; -fx-background-radius: 50%; -fx-border-radius: 50%;");
+        ownerButton.setPrefSize(20, 20); // Устанавливаем размер кнопки-круга
+        ownerButton.setMaxSize(20, 20);
+        ownerButton.setMinSize(20, 20);
+
+        // Добавляем обработчик клика для кнопки владельца
+        ownerButton.setOnAction(e -> {
+            e.consume();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Информация о владельце");
+            alert.setHeaderText("Поле: " + tile.getName());
+            alert.setContentText("Владелец: " + owner);
+            alert.showAndWait();
+        });
+
+        // Создаём StackPane для графики кнопки клетки
+        StackPane stackPane;
+        if (fieldButton.getGraphic() instanceof StackPane) {
+            stackPane = (StackPane) fieldButton.getGraphic();
+        } else {
+            stackPane = new StackPane();
+        }
+
+        // Добавляем кнопку-круг в StackPane поверх основной кнопки
+        if (!stackPane.getChildren().contains(ownerButton)) {
+            stackPane.getChildren().add(ownerButton);
+            StackPane.setAlignment(ownerButton, Pos.TOP_RIGHT); // Размещаем кнопку-круг в верхнем правом углу
+        }
+
+        // Устанавливаем StackPane как графический элемент кнопки клетки
+        fieldButton.setGraphic(stackPane);
+
+        // Сбрасываем текст и фон кнопки клетки
+        fieldButton.setText("");
+        fieldButton.setStyle("-fx-background-color: transparent;"); // Прозрачный фон
     }
+
+
+//    private void setOwnerStyleForButton(Button button, Tile tile, String owner) {
+//        button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
+//        button.setText(tile.getName() + "\n(Owner: " + owner + ")");
+//    }
+
+//    private void setPlayerOnTileStyleForButton(Button button, String playerName) {
+//        button.setText(button.getText()+"\n[" + playerName + "]");
+//    }
+private void setPlayerOnTileStyleForButton(Button button, String playerName) {
+    // Проверяем, есть ли изображение для игрока
+
+    String tokenImagePath = playerPathToIco.get(playerName.trim());
+    if (tokenImagePath == null) {
+        System.err.println("Не удалось найти изображение для игрока: " + playerName);
+        return;
+    }
+
+    // Загружаем изображение фишки игрока
+    ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
+    playerToken.setFitWidth(30); // Устанавливаем размер фишки
+    playerToken.setFitHeight(30);
+
+    // Добавляем всплывающее окно с информацией об игроке
+    Tooltip tooltip = new Tooltip("Игрок: " + playerName + "\nБаланс: $" + playerBalances.getOrDefault(playerName, 0));
+    Tooltip.install(playerToken, tooltip);
+
+    // Добавляем обработчик клика на фишку
+    playerToken.setOnMouseClicked(e -> {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Информация об игроке");
+        alert.setHeaderText(playerName);
+        alert.setContentText("Баланс: $" + playerBalances.getOrDefault(playerName, 0));
+        alert.showAndWait();
+    });
+
+    // Получаем или создаём StackPane для кнопки
+    StackPane stackPane;
+    if (button.getGraphic() instanceof StackPane) {
+        stackPane = (StackPane) button.getGraphic();
+    } else {
+        stackPane = new StackPane();
+        button.setGraphic(stackPane); // Устанавливаем StackPane как графику кнопки
+    }
+
+    // Добавляем фишку игрока в StackPane
+    stackPane.getChildren().add(playerToken);
+    StackPane.setAlignment(playerToken, Pos.CENTER); // Размещаем фишку в центре кнопки
+}
 
 
     public void displayGameOver(String winner) {
@@ -348,7 +442,11 @@ public class WindowSettingForGUI {
     }
 
 
+    private void registerPlayerPath(String playerName, String tokenImagePath) {
+        playerPathToIco.put(playerName, tokenImagePath);
+    }
 
     public void updateTileState(String content) {
     }
+
 }

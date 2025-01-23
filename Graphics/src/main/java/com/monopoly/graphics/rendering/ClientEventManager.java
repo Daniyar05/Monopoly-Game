@@ -27,7 +27,6 @@ public class ClientEventManager implements EventManager {
 
     @Override
     public boolean choiceYes(EventEnum question) {
-        // Используем CompletableFuture для синхронного ожидания результата
         final boolean[] resultHolder = new boolean[1];
 
         addToQueue(() -> {

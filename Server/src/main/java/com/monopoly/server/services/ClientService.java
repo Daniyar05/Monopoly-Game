@@ -1,7 +1,5 @@
 package com.monopoly.server.services;
 
-import com.monopoly.game.component.area.PropertyTile;
-import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.from_Server.message.EventEnum;
 import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
@@ -18,10 +16,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import static com.monopoly.game.from_Server.message.MessageType.*;
 
 
 public class ClientService implements Runnable, ClientServiceInterface {
@@ -34,6 +32,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private GameGUI gameGUI;
     private final BlockingQueue<Boolean> responseQueue = new ArrayBlockingQueue<>(1);
     private ClientEventManager clientEventManager;
+    private List<String> listPlayers;
 
     public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
@@ -120,6 +119,9 @@ public class ClientService implements Runnable, ClientServiceInterface {
 
                     startGame();
                 }
+                case GET_ALL_PLAYERS -> {
+                    this.listPlayers = Arrays.asList(gameMessage.content().split(","));
+                }
                 default -> System.err.println("Неизвестное сообщение от сервера: " + message);
             }
         }
@@ -167,6 +169,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         }
                         break;
 
+
                     default:
                         System.err.println("Неизвестный тип сообщения: " + gameMessage.type());
                 }
@@ -183,5 +186,10 @@ public class ClientService implements Runnable, ClientServiceInterface {
 
     private void closeWaitingRoom() {
         Platform.runLater(primaryStage::close);
+    }
+
+    @Override
+    public List<String> getListPlayers() {
+        return listPlayers;
     }
 }

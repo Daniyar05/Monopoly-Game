@@ -3,6 +3,8 @@ package com.monopoly.game.from_Server.service;
 import com.monopoly.game.from_Server.message.EventEnum;
 import com.monopoly.game.from_Server.message.GameMessage;
 
+import java.util.List;
+
 public interface ClientServiceInterface {
 
     void sendEventRequest(EventEnum question); // Отправить запрос клиенту
@@ -14,4 +16,5 @@ public interface ClientServiceInterface {
 
     void sendCommand(GameMessage message);
 
+    List<String> getListPlayers();
 }
