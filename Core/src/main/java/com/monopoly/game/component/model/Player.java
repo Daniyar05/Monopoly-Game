@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class Player {
-
+    private boolean hasJailFreeCard;
     private String name;
     private Cash wallet;
     private int position;
@@ -71,5 +71,15 @@ public class Player {
     public boolean enoughCash(Cash cash) {
 
         return wallet.compareTo(cash)>=0;
+    }
+
+    public void useJailFreeCard() {
+        if(hasJailFreeCard) {
+            hasJailFreeCard = false;
+        }
+    }
+
+    public void addJailFreeCard() {
+        hasJailFreeCard = true;
     }
 }

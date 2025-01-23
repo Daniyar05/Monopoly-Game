@@ -41,7 +41,7 @@ public class TileConfigurator {
                 new PropertyTile(25, "B&O Railroad", 200, 25), // Железная дорога
                 new PropertyTile(26, "Atlantic Avenue", 260, 22), // Собственность
                 new PropertyTile(27, "Ventnor Avenue", 260, 22), // Собственность
-                new UtilityTile(28, "Water Works", 150, 10), // Водопровод
+                new PropertyTile(28, "Water Works", 150, 10), // Водопровод //TODO добавить UTILITY Tile !!
                 new PropertyTile(29, "Marvin Gardens", 280, 24), // Собственность
                 new GoToJailTile(30), // Отправляйтесь в тюрьму
 

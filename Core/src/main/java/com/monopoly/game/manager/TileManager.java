@@ -48,7 +48,7 @@ public class TileManager {
                 ));
             }
         } else {
-            tile.execute(player);
+            tile.execute(player, eventManager);
         }
     }
 }

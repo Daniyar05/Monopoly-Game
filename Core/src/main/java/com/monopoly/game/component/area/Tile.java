@@ -1,6 +1,7 @@
 package com.monopoly.game.component.area;
 
 import com.monopoly.game.component.model.Player;
+import com.monopoly.game.manager.EventManager;
 import lombok.Getter;
 
 @Getter
@@ -13,5 +14,5 @@ public abstract class Tile {
         this.name = name;
     }
 
-    public void execute(Player player) {}
+    public void execute(Player player, EventManager eventManager) {}
 }
