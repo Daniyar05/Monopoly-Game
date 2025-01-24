@@ -11,11 +11,6 @@ public abstract class AbstractPromissoryNote {
     private Cash cash;
     private Player playerTo;
 
-
-    public int getAmountOfMoney(){
-        return cash.getAmount();
-    }
-
     public void execute() {
         System.err.println("default execute method in AbstractPromissoryNote");
     }

@@ -17,8 +17,4 @@ public class Board {
         return tiles.get(position % tiles.size());
 
     }
-
-    public void interactWithTile(Player player, int position) {
-
-    }
 }

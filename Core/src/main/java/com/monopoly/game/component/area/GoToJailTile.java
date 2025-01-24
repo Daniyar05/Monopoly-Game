@@ -23,6 +23,7 @@ public class GoToJailTile extends Tile{
                         String.valueOf(player.getPosition())
                 ));
                 if (player.isHasJailFreeCard()){
+                    player.useJailFreeCard();
                     eventManager.sendCommand(new GameMessage(
                             MessageType.NOTIFICATION,
                             player.getName(),
@@ -44,7 +45,6 @@ public class GoToJailTile extends Tile{
                     ));
                 }
             }
-
         });
     }
 }

@@ -50,19 +50,9 @@ public class TileManager {
                 eventManager.notifyAboutAction(
                         "Вы попали на поле %s и уплатил $%s игроку %s".formatted(tile.getName(), payingRent.getCash().getAmount(), owner.getName()),
                         player.getName());
-//                eventManager.sendCommand(new GameMessage(
-//                        MessageType.NOTIFICATION,
-//                        player.getName(),
-//                        "Вы попали на поле %s и уплатил $%s игроку %s".formatted(tile.getName(), payingRent.getCash().getAmount(), owner.getName())
-//                ));
                 eventManager.notifyAboutAction(
                         "Игрок %s попал на ваше поле %s и уплатил $%s".formatted(player.getName(), tile.getName(), payingRent.getCash().getAmount()),
                         owner.getName());
-//                eventManager.sendCommand(new GameMessage(
-//                        MessageType.NOTIFICATION,
-//                        owner.getName(),
-//                        "Игрок %s попал на ваше поле %s и уплатил $%s".formatted(player.getName(), tile.getName(), payingRent.getCash().getAmount())
-//                ));
             }
         }
 

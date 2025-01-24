@@ -86,19 +86,6 @@ public class GameManager {
                     playerManager.nowPlayer().getName(),
                     "Сейчас ваш ход"
             ));
-//        new Thread(()->{
-//            try {
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            eventManager.sendCommand(new GameMessage(
-//                    MessageType.NOTIFICATION,
-//                    playerManager.nowPlayer().getName(),
-//                    "Сейчас ваш ход"
-//            ));
-//        }).run();
-
     }
 
     public int rollDice(){

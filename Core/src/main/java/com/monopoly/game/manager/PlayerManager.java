@@ -20,7 +20,6 @@ public class PlayerManager {
 
     public void start(List<Player> players) {
         this.players = players;
-//        moneyManager.setPlayers(players);
     }
 
 
@@ -39,9 +38,6 @@ public class PlayerManager {
     public int move(int step) {
         return nowPlayer().changePosition(step);
     }
-    public void addPlayer(Player player){
-        players.add(player);
-    }
 
     public Player deleteOwnerTile(String playerName, String tileName) {
         Player targetPlayer = players.stream()
@@ -50,21 +46,18 @@ public class PlayerManager {
                 .orElse(null);
 
         if (targetPlayer == null) {
-            return null; // Игрок не найден
+            return null;
         }
 
-        // Находим клетку по имени среди владений игрока
         PropertyTile tileToRemove = targetPlayer.getOwnedProperties().stream()
                 .filter(tile -> tile.getName().equals(tileName))
                 .findFirst()
                 .orElse(null);
 
         if (tileToRemove != null) {
-            // Удаляем владение
             targetPlayer.getOwnedProperties().remove(tileToRemove);
-            tileToRemove.setOwner(null); // Сбрасываем владельца клетки
+            tileToRemove.setOwner(null);
 
-            // Обновляем баланс (возвращаем 50% стоимости)
             int sellPrice = tileToRemove.getCost().getAmount() / 2;
             targetPlayer.getWallet().addCash(new Cash(sellPrice));
         }

@@ -8,7 +8,6 @@ public class TileConfigurator {
 
     public static List<Tile> configureTiles() {
         return List.of(
-                // Верхняя сторона (слева направо)
                 new StartTile(0),
                 new PropertyTile(1, "Mediterranean Avenue", 60, 2, 1),   // Группа 1 (Коричневые)
                 new CommunityChestTile(2),
@@ -21,7 +20,6 @@ public class TileConfigurator {
                 new PropertyTile(9, "Connecticut Avenue", 120, 8, 2),    // Группа 2
                 new JailTile(10),
 
-                // Правая сторона (сверху вниз)
                 new PropertyTile(11, "St. Charles Place", 140, 10, 3),   // Группа 3 (Розовые)
                 new UtilityTile(12, "Electric Company", 150, 10, 11),     // Группа 11 (Коммунальные)
                 new PropertyTile(13, "States Avenue", 140, 10, 3),       // Группа 3
@@ -33,7 +31,6 @@ public class TileConfigurator {
                 new PropertyTile(19, "New York Avenue", 200, 16, 4),     // Группа 4
                 new FreeParkingTile(20, "Free Parking"),
 
-                // Нижняя сторона (справа налево)
                 new PropertyTile(21, "Kentucky Avenue", 220, 18, 5),     // Группа 5 (Красные)
                 new ChanceTile(22),
                 new PropertyTile(23, "Indiana Avenue", 220, 18, 5),      // Группа 5
@@ -45,7 +42,6 @@ public class TileConfigurator {
                 new PropertyTile(29, "Marvin Gardens", 280, 24, 6),      // Группа 6
                 new GoToJailTile(30),
 
-                // Левая сторона (снизу вверх)
                 new PropertyTile(31, "Pacific Avenue", 300, 26, 7),      // Группа 7 (Зеленые)
                 new PropertyTile(32, "North Carolina Avenue", 300, 26, 7), // Группа 7
                 new CommunityChestTile(33),

@@ -11,5 +11,4 @@ public class UtilityTile extends PropertyTile {
         super(position, name, cost, cost*multiplier, group);
         this.multiplier=multiplier;
     }
-
 }
