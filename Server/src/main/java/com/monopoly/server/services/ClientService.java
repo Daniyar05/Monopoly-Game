@@ -52,31 +52,6 @@ public class ClientService implements Runnable, ClientServiceInterface {
     }
 
     @Override
-    public void sendEventRequest(EventEnum question) {
-
-    }
-
-    @Override
-    public boolean hasResponse() {
-        return !responseQueue.isEmpty();
-    }
-
-    @Override
-    public boolean getResponse() {
-        try {
-            return responseQueue.take();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Ошибка получения ответа", e);
-        }
-    }
-
-    @Override
-    public void sendNotification(String message) {
-
-    }
-
-    @Override
     public void sendCommand(GameMessage message) {
         out.println(message.toString());
     }
@@ -221,6 +196,4 @@ public class ClientService implements Runnable, ClientServiceInterface {
     public String getNowPlayerName() {
         return nowPlayer;
     }
-
-
 }
