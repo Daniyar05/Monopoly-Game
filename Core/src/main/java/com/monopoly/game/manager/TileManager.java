@@ -32,7 +32,7 @@ public class TileManager {
                             String.valueOf(player.getWallet().getAmount())
                     ));
                 } else {
-                    eventManager.notifyAboutAction("Rejection buying tile", player.getName()); // FIXME - удалить
+                    eventManager.notifyAboutAction("Вы отказались покупать ", player.getName()); // FIXME - удалить
                 }
             }else if (!player.equals(owner)){
                 PayingRent payingRent = new PayingRent(player);
@@ -47,16 +47,22 @@ public class TileManager {
                         owner.getName(),
                         String.valueOf(owner.getWallet().getAmount())
                 ));
-                eventManager.sendCommand(new GameMessage(
-                        MessageType.NOTIFICATION,
-                        player.getName(),
-                        "Вы попали на поле %s и уплатил $%s игроку %s".formatted(tile.getName(), payingRent.getCash().getAmount(), owner.getName())
-                ));
-                eventManager.sendCommand(new GameMessage(
-                        MessageType.NOTIFICATION,
-                        owner.getName(),
-                        "Игрок %s попал на ваше поле %s и уплатил $%s".formatted(player.getName(), tile.getName(), payingRent.getCash().getAmount())
-                ));
+                eventManager.notifyAboutAction(
+                        "Вы попали на поле %s и уплатил $%s игроку %s".formatted(tile.getName(), payingRent.getCash().getAmount(), owner.getName()),
+                        player.getName());
+//                eventManager.sendCommand(new GameMessage(
+//                        MessageType.NOTIFICATION,
+//                        player.getName(),
+//                        "Вы попали на поле %s и уплатил $%s игроку %s".formatted(tile.getName(), payingRent.getCash().getAmount(), owner.getName())
+//                ));
+                eventManager.notifyAboutAction(
+                        "Игрок %s попал на ваше поле %s и уплатил $%s".formatted(player.getName(), tile.getName(), payingRent.getCash().getAmount()),
+                        owner.getName());
+//                eventManager.sendCommand(new GameMessage(
+//                        MessageType.NOTIFICATION,
+//                        owner.getName(),
+//                        "Игрок %s попал на ваше поле %s и уплатил $%s".formatted(player.getName(), tile.getName(), payingRent.getCash().getAmount())
+//                ));
             }
         }
 

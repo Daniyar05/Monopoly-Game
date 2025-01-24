@@ -281,9 +281,7 @@ public class WindowSettingForGUI {
 //        StringBuilder playersOnTile = new StringBuilder();
         playerPositions.forEach((playerName, playerPosition) -> {
             if (playerPosition == tilePositionActual) {
-                System.out.println(playerName);
                 names.add(playerName);
-//                playersOnTile.append(playerName).append(" ");
             }
         });
 
@@ -411,7 +409,6 @@ public class WindowSettingForGUI {
             playerToken.setFitWidth(i); // Устанавливаем размер фишки
             playerToken.setFitHeight(i);
 
-            System.out.println("Для пользователя "+playerName+"->"+clientService.getNowPlayerName());
             if (playerName.equals(clientService.getNowPlayerName())) {
                 System.out.println("This personal is move - "+playerName);
                 playerToken.setStyle("-fx-effect: dropshadow(gaussian, green, 25, 0, 0, 0);");

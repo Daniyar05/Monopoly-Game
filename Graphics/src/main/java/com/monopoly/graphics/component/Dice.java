@@ -40,7 +40,7 @@ public class Dice {
         drawDiceFace(gc, diceImages[0]);
 
         // Анимация смены граней кубика
-        animationTimeline = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+        animationTimeline = new Timeline(new KeyFrame(Duration.millis(30), e -> {
             int randomFace = (int) (Math.random() * 6);
             drawDiceFace(gc, diceImages[randomFace]); // Рисуем текущую грань кубика
         }));

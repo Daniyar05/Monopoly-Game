@@ -27,10 +27,7 @@ public class Game {
         gameManager.startGame(configurationGame);
         gameStatus=GameStatus.WAITING;
     }
-    public void stop(){
-        gameManager.stopGame();
-        gameStatus = GameStatus.FINISHED;
-    }
+
     public int move(){
         if (GameStatus.WAITING.equals(gameStatus)){
             System.out.println("Waiting for move in old function");

@@ -1,5 +1,6 @@
 package com.monopoly.game.manager;
 
+import com.monopoly.game.Game;
 import com.monopoly.game.component.model.Dice;
 import com.monopoly.game.component.model.Player;
 import com.monopoly.game.component.money.Cash;
@@ -16,9 +17,6 @@ public class GameManager {
     private final PlayerManager playerManager;
     private final EventManager eventManager;
 
-    public int getTileSize(){
-        return boardManager.tileSize();
-    }
 
     public void startGame(ConfigurationGame configurationGame) {
         boardManager.start(configurationGame.getTiles());
@@ -71,7 +69,9 @@ public class GameManager {
 
     private void moveFinish() {
         playerManager.nextPlayer();
-        checkGameOver();
+        if (checkGameOver()) {
+            stopGame();
+        }
         notifyNextPlayer();
     }
 
@@ -104,7 +104,7 @@ public class GameManager {
     public int rollDice(){
         return Dice.roll();
     }
-    private void checkGameOver() {
+    private boolean checkGameOver() {
         long activePlayers = playerManager.getPlayers().stream()
                 .filter(p -> !p.isBankrupt())
                 .count();
@@ -122,5 +122,6 @@ public class GameManager {
                     )
             );
         }
+        return activePlayers == 1;
     }
 }

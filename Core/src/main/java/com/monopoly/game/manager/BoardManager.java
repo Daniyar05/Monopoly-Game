@@ -1,6 +1,5 @@
 package com.monopoly.game.manager;
 
-import com.monopoly.game.action.processGame.EventMoveGame;
 import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.component.model.Board;
 import com.monopoly.game.component.model.Player;
