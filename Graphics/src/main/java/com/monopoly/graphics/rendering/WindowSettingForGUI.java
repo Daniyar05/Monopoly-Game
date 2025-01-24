@@ -40,7 +40,6 @@ public class WindowSettingForGUI {
     // Карта позиций игроков (имя -> позиция)
     private final Map<String, Integer> playerPositions = new HashMap<>();
     private final Map<String, String> tileOwners = new HashMap<>(); // Добавьте данные о владельцах клеток
-//    private final Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
 
     private final Map<Integer, Button> tileButtons = new HashMap<>();
     private final Map<String, String> playerPathToIco = new HashMap<>(); // Игрок -> путь к его изображению
@@ -101,7 +100,7 @@ public class WindowSettingForGUI {
 
         grid.getColumnConstraints().clear();
         grid.getRowConstraints().clear();
-        grid.setPrefSize(currentWidth, currentHeight); // Фиксируем размеры сетки
+        grid.setPrefSize(currentWidth, currentHeight);
         for (int i = 0; i < BOARD_SIZE; i++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
             if (i == 0 || i == BOARD_SIZE-1){
@@ -109,7 +108,7 @@ public class WindowSettingForGUI {
             } else {
                 colConstraints.setPrefWidth(tileWidth);
             }
-            colConstraints.setHgrow(Priority.ALWAYS); // Разрешаем колонкам растягиваться
+            colConstraints.setHgrow(Priority.ALWAYS);
             grid.getColumnConstraints().add(colConstraints);
         }
 
@@ -120,7 +119,7 @@ public class WindowSettingForGUI {
             } else {
                 rowConstraints.setPrefHeight(tileHeight);
             }
-            rowConstraints.setVgrow(Priority.ALWAYS); // Разрешаем строкам растягиваться
+            rowConstraints.setVgrow(Priority.ALWAYS);
             grid.getRowConstraints().add(rowConstraints);
         }
 
@@ -131,8 +130,6 @@ public class WindowSettingForGUI {
         Button button = new Button();
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         button.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
-//        button.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-//        button.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 
 
         button.setOnAction(e -> openTileDescription(tile));
@@ -195,14 +192,11 @@ public class WindowSettingForGUI {
         background.setPreserveRatio(false);
         background.setFitWidth(WINDOW_SIZE);
         background.setFitHeight(WINDOW_SIZE);
-        // Оборачиваем фон и игровое поле в StackPane
+
         StackPane layeredPane = new StackPane();
         layeredPane.getChildren().add(background);
 
-        // Создание игрового поля
         GridPane grid = new GridPane();
-//        grid.setGridLinesVisible(true);
-
         List<Tile> tiles = TileConfigurator.configureTiles();
         createBoard(grid, tiles);
         dice.createAnimatedDice(grid, BOARD_SIZE / 2+1, BOARD_SIZE / 2+1);
@@ -210,25 +204,24 @@ public class WindowSettingForGUI {
         layeredPane.getChildren().add(grid);
         mainLayout.setCenter(layeredPane);
 
-//        addPlayerInfoPanel(mainLayout, clientService.getPlayerBalances());
 
         Scene scene = new Scene(mainLayout, WINDOW_SIZE, WINDOW_SIZE);
         primaryStage.setTitle("Monopoly Board");
-        primaryStage.setMinWidth(500); // Минимальная ширина окна
-        primaryStage.setMinHeight(500); // Минимальная высота окна
-//        primaryStage.setMaxWidth(WINDOW_SIZE); // Установите, если хотите зафиксировать размеры
-//        primaryStage.setMaxHeight(WINDOW_SIZE);
+        primaryStage.setMinWidth(500);
+        primaryStage.setMinHeight(500);
         primaryStage.setScene(scene);
         currentWidth = scene.getWidth();
         currentHeight = scene.getHeight();
         scene.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             if (!newWidth.equals(currentWidth)) {
+                System.out.println("currentWidth");
                 adjustLayout(grid, background, newWidth.doubleValue(), scene.getHeight());
             }
         });
 
         scene.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             if (!newHeight.equals(currentHeight)) {
+                System.out.println("currentHeight");
                 adjustLayout(grid, background, scene.getWidth(), newHeight.doubleValue());
             }
         });
@@ -236,17 +229,11 @@ public class WindowSettingForGUI {
     }
 
     private void adjustLayout(GridPane grid, ImageView background, double newWidth, double newHeight) {
-        // Масштабируем фоновое изображение
-        System.out.println(newHeight+" -=-=-=- "+newWidth);
         currentWidth = newWidth;
         currentHeight = newHeight;
         background.setFitWidth(currentWidth);
         background.setFitHeight(currentHeight);
         settings(grid, currentWidth, currentHeight);
-        // Пересчитываем размеры всех кнопок
-        for (int i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-            updateButtonTile(i);
-        }
     }
 
     public void updatePlayerPosition(String playerName) {
@@ -255,27 +242,18 @@ public class WindowSettingForGUI {
 
     }
     public void updatePlayerPosition(String playerName, String newPosition) {
-        // Получаем старую и новую позиции игрока
         int oldPosition = playerPositions.getOrDefault(playerName, -1);
         int newTilePosition = Integer.parseInt(newPosition)%tileButtons.size();
 
-        // Обновляем положение игрока
         playerPositions.put(playerName, newTilePosition);
         System.out.println("Игрок " + playerName + " переместился с клетки " + oldPosition + " на клетку " + newTilePosition);
 
-        // Обновляем старую и новую кнопки, если они есть
         if (oldPosition >= 0) {
             updateButtonTile(oldPosition);
         }
         updateButtonTile(newTilePosition);
     }
 
-
-
-    private void replaceAndUploadPlayerPosition(String playerName, int positionNow, int oldPosition) {
-        updateButtonTile(oldPosition);
-        updateButtonTile(positionNow);
-    }
 
     public void updateButtonTile(int tilePosition) {
         System.out.println("Обновлено поле "+tilePosition);
@@ -286,10 +264,9 @@ public class WindowSettingForGUI {
             System.err.println("Кнопка для позиции " + tilePositionActual + " не найдена!");
             return;
         }
-        Tile tile = TileConfigurator.getTileByPosition(tilePositionActual); // Предполагается, что есть метод для получения клетки
+        Tile tile = TileConfigurator.getTileByPosition(tilePositionActual);
         String owner = tileOwners.get(tile.getName());
 
-        // Проверяем, находятся ли игроки на этой клетке
         List<String> names = new ArrayList<>();
         playerPositions.forEach((playerName, playerPosition) -> {
             if (playerPosition == tilePositionActual) {
@@ -315,7 +292,7 @@ public class WindowSettingForGUI {
     private void setDefaultStyleForButton(Button button) {
         button.setGraphic(null);
         button.setText("");
-        button.setStyle("-fx-background-color: transparent;"); // Прозрачная кнопка //  -fx-border-color: black; -fx-text-fill: black
+        button.setStyle("-fx-background-color: transparent;"); // Прозрачная кнопка
     }
     private void setOwnerStyleForButton(Button fieldButton, Tile tile, String owner) {
         fieldButton.setGraphic(null);
@@ -323,26 +300,22 @@ public class WindowSettingForGUI {
         Button ownerButton = new Button();
         ownerButton.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner)
                 + "; -fx-background-radius: 50%; -fx-border-radius: 50%;");
-        ownerButton.setPrefSize(20, 20); // Устанавливаем размер кнопки-круга
+        ownerButton.setPrefSize(20, 20);
         ownerButton.setMaxSize(20, 20);
         ownerButton.setMinSize(20, 20);
 
         ownerButton.setOnAction(e -> {
             e.consume();
-
-            // Создаем диалоговое окно
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Управление собственностью");
             alert.setHeaderText("Поле: " + tile.getName());
 
-            // Создаем контейнер с информацией
             VBox vbox = new VBox(10);
             vbox.getChildren().addAll(
                     new Label("Владелец: " + owner),
                     new Label("Стоимость: $" + ((PropertyTile)tile).getCost().getAmount())
             );
 
-            // Добавляем кнопку продажи только для владельца
             if (owner.equals(nickname)) {
                 Button sellButton = new Button("Продать собственность");
                 sellButton.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
@@ -358,7 +331,6 @@ public class WindowSettingForGUI {
         });
 
 
-        // Создаём StackPane для графики кнопки клетки
         StackPane stackPane;
         if (fieldButton.getGraphic() instanceof StackPane) {
             stackPane = (StackPane) fieldButton.getGraphic();
@@ -368,20 +340,15 @@ public class WindowSettingForGUI {
 
 
 
-        // Добавляем кнопку-круг в StackPane поверх основной кнопки
         if (!stackPane.getChildren().contains(ownerButton)) {
-//            stackPane.getChildren().add(rightButtons);
-//            StackPane.setAlignment(rightButtons, Pos.TOP_RIGHT);
             stackPane.getChildren().add(ownerButton);
-            StackPane.setAlignment(ownerButton, Pos.TOP_RIGHT); // Размещаем кнопку-круг в верхнем правом углу
+            StackPane.setAlignment(ownerButton, Pos.TOP_RIGHT);
         }
 
-        // Устанавливаем StackPane как графический элемент кнопки клетки
         fieldButton.setGraphic(stackPane);
 
         fieldButton.setText("");
-//        fieldButton.setPrefSize(currentWidth/BOARD_SIZE, currentHeight/BOARD_SIZE);
-        fieldButton.setStyle("-fx-background-color: transparent;"); // Прозрачный фон
+        fieldButton.setStyle("-fx-background-color: transparent;");
     }
 
     private void handleSellProperty(Tile tile) {
@@ -416,10 +383,9 @@ public class WindowSettingForGUI {
                 continue;
             }
 
-            // Загружаем изображение фишки игрока
             ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
             int i = 30; // Размер фишки
-            playerToken.setFitWidth(i); // Устанавливаем размер фишки
+            playerToken.setFitWidth(i);
             playerToken.setFitHeight(i);
 
             if (playerName.equals(clientService.getNowPlayerName())) {
@@ -466,12 +432,10 @@ public class WindowSettingForGUI {
 
 
     public void updateTileOwner(GameMessage gameMessage) {
-        // Обновляем владельца клетки
         String nameTile = TileConfigurator.getTileByPosition(Integer.parseInt(gameMessage.content())).getName();
         tileOwners.put(nameTile, gameMessage.sender());
         System.out.println("Клетка " + gameMessage.content() + " теперь принадлежит " + gameMessage.sender());
 
-        // Обновляем только соответствующую кнопку
         Tile tile = TileConfigurator.getTileByPosition(Integer.parseInt(gameMessage.content()));
         if (tile != null) {
             updateButtonTile(Integer.parseInt(gameMessage.content()));

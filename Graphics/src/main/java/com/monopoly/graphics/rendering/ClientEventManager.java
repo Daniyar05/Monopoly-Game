@@ -6,8 +6,16 @@ import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.manager.EventManager;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -16,13 +24,15 @@ import java.util.Queue;
 public class ClientEventManager implements EventManager {
     private final PrintWriter out;
     private final String nickname;
+    private final Stage stage;
     private final Queue<Runnable> taskQueue = new LinkedList<>();
     private boolean isTaskActive = false; // Флаг, указывающий на выполнение текущей задачи
     private final Object lock = new Object(); // Объект для синхронизации потоков
 
-    public ClientEventManager(PrintWriter out, String nickname) {
+    public ClientEventManager(PrintWriter out, String nickname, Stage stage) {
         this.out = out;
         this.nickname = nickname;
+        this.stage = stage;
     }
 
     @Override
@@ -65,15 +75,38 @@ public class ClientEventManager implements EventManager {
     @Override
     public void notifyAboutAction(String message, String nickname) {
         addToQueue(() -> Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Notification");
-            alert.setHeaderText(null);
-            alert.setContentText(message);
 
-            alert.setOnHidden(e -> processNextTask());
-            alert.show();
+            Stage notificationStage = new Stage();
+            notificationStage.initOwner(stage);
+            notificationStage.setAlwaysOnTop(true);
+            notificationStage.setResizable(false);
+            Label notificationLabel = new Label(message);
+            StackPane pane = new StackPane(notificationLabel);
+            Scene scene = new Scene(pane);
+
+            notificationStage.setScene(scene);
+            notificationStage.setWidth(300);
+            notificationStage.setHeight(100);
+
+            notificationStage.setX(stage.getX() + stage.getWidth()/2-100);
+            notificationStage.setY(stage.getY() + stage.getHeight()/2-200);
+            notificationStage.show();
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                    Platform.runLater(() -> {
+                        notificationStage.close();
+                        processNextTask();
+                    });
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }).start();
+
         }));
     }
+
 
     private void addToQueue(Runnable task) {
         synchronized (lock) {

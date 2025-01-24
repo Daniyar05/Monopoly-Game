@@ -37,13 +37,15 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private List<String> listPlayers;
     private Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
     private String nowPlayer;
+    private final Stage stage=new Stage();
+
 
     public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
             this.socket = new Socket(host, port);
             this.nickname = nickname;
             this.out = new PrintWriter(socket.getOutputStream(), true);
-            this.clientEventManager = new ClientEventManager(out, nickname);
+            this.clientEventManager = new ClientEventManager(out, nickname, stage);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.primaryStage = primaryStage;
         } catch (IOException e) {
@@ -179,7 +181,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private void startGame() {
         Platform.runLater(() -> {
             gameGUI = new GameGUI(nickname, this);
-            gameGUI.start(new Stage());
+            gameGUI.start(stage);
         });
     }
 
