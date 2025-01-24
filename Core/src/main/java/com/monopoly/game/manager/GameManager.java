@@ -23,6 +23,7 @@ public class GameManager {
     public void startGame(ConfigurationGame configurationGame) {
         boardManager.start(configurationGame.getTiles());
         playerManager.start(configurationGame.getPlayers());
+        notifyNextPlayer();
     }
 
     public void stopGame() {
@@ -48,14 +49,14 @@ public class GameManager {
             eventManager.sendCommand(new GameMessage(
                     MessageType.NOTIFICATION,
                     playerNow.getName(),
-                    "Вы попали в тюрьму и вам осталось сидеть %s хода".formatted(playerNow.getCountSkipSteps())
+                    "Вы Находитесь в тюрьме и вам осталось сидеть %s хода".formatted(playerNow.getCountSkipSteps())
             ));
             playerNow.reduceCountSkipSteps();
+            moveFinish();
             return -1;
         }
         int newPositionPlayer = playerManager.move(step);
         int positionOnBoard = boardManager.move(newPositionPlayer, playerNow);
-//        System.out.println(oldPositionPlayer+"--=-=-=-=-=-="+newPositionPlayer+"   "+boardManager.tileSize());
         if (oldPositionPlayer % boardManager.tileSize() > newPositionPlayer % boardManager.tileSize()){
             playerNow.getWallet().addCash(new Cash(200));
             eventManager.sendCommand(new GameMessage(
@@ -70,7 +71,34 @@ public class GameManager {
 
     private void moveFinish() {
         playerManager.nextPlayer();
-//        checkGameOver();
+        checkGameOver();
+        notifyNextPlayer();
+    }
+
+    public void notifyNextPlayer(){
+        eventManager.sendCommand(new GameMessage(
+                MessageType.NEXT_PLAYER,
+                playerManager.nowPlayer().getName(),
+                ""
+        ));
+        eventManager.sendCommand(new GameMessage(
+                    MessageType.NOTIFICATION,
+                    playerManager.nowPlayer().getName(),
+                    "Сейчас ваш ход"
+            ));
+//        new Thread(()->{
+//            try {
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//            eventManager.sendCommand(new GameMessage(
+//                    MessageType.NOTIFICATION,
+//                    playerManager.nowPlayer().getName(),
+//                    "Сейчас ваш ход"
+//            ));
+//        }).run();
+
     }
 
     public int rollDice(){

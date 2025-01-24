@@ -236,7 +236,11 @@ public class WindowSettingForGUI {
 
     }
 
+    public void updatePlayerPosition(String playerName) {
+        int position = playerPositions.getOrDefault(playerName, -1);
+        updateButtonTile(position);
 
+    }
     public void updatePlayerPosition(String playerName, String newPosition) {
         // Получаем старую и новую позиции игрока
         int oldPosition = playerPositions.getOrDefault(playerName, -1);
@@ -365,26 +369,18 @@ public class WindowSettingForGUI {
         // Устанавливаем StackPane как графический элемент кнопки клетки
         fieldButton.setGraphic(stackPane);
 
-        // Сбрасываем текст и фон кнопки клетки
         fieldButton.setText("");
         fieldButton.setStyle("-fx-background-color: transparent;"); // Прозрачный фон
     }
 
     private void handleSellProperty(Tile tile) {
-        // Логика продажи
         if (tile instanceof PropertyTile) {
-
-            // Возвращаем деньги владельцу
             clientService.sendCommand(new GameMessage(
                     MessageType.SELL_TILE,
                     nickname,
                     tile.getName()
                     )
             );
-
-
-            // Обновляем интерфейс
-//            update(stage);
         }
     }
 
@@ -411,16 +407,22 @@ public class WindowSettingForGUI {
 
             // Загружаем изображение фишки игрока
             ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
-            playerToken.setFitWidth(20); // Устанавливаем размер фишки
-            playerToken.setFitHeight(20);
+            int i = 30; // Размер фишки
+            playerToken.setFitWidth(i); // Устанавливаем размер фишки
+            playerToken.setFitHeight(i);
+
+            System.out.println("Для пользователя "+playerName+"->"+clientService.getNowPlayerName());
+            if (playerName.equals(clientService.getNowPlayerName())) {
+                System.out.println("This personal is move - "+playerName);
+                playerToken.setStyle("-fx-effect: dropshadow(gaussian, green, 25, 0, 0, 0);");
+            }
 
             setTooltipForPlayer(playerName, playerToken, stackPane);
 
 
             // Определяем позиции для фишек на одной клетке
             double[][] positions = {
-                    {-20, -20}, {20, -20}, {-20, 20}, {20, 20}, // Для до четырёх игроков
-                    {0, -20}, {0, 20}, {-20, 0}, {20, 0}        // Дополнительные позиции
+                    {-i, -i}, {i, -i}, {-i, i}, {i, i} // Для до четырёх игроков
             };
             double xOffset = positions[index % positions.length][0];
             double yOffset = positions[index % positions.length][1];

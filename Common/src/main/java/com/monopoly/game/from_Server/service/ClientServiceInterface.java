@@ -20,4 +20,6 @@ public interface ClientServiceInterface {
     Map<String, Integer> getPlayerBalances();
 
     List<String> getListPlayers();
+
+    String getNowPlayerName();
 }

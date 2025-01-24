@@ -36,7 +36,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private ClientEventManager clientEventManager;
     private List<String> listPlayers;
     private Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
-
+    private String nowPlayer;
 
     public ClientService(String host, int port, String nickname, Stage primaryStage) {
         try {
@@ -136,7 +136,10 @@ public class ClientService implements Runnable, ClientServiceInterface {
     }
 
     private void processServerUpdate(String message) {
-        if (GameMessage.fromString(message).type()!=MessageType.UPDATE_BALANCE && gameGUI.getWindowSetting() == null) {
+        if (GameMessage.fromString(message).type()!=(MessageType.UPDATE_BALANCE)
+                && GameMessage.fromString(message).type()!=(MessageType.NEXT_PLAYER)
+                && GameMessage.fromString(message).type()!=(MessageType.NOTIFICATION)
+                && gameGUI.getWindowSetting() == null) {
             System.err.println("WindowSetting не инициализирован.");
             return;
         }
@@ -179,11 +182,16 @@ public class ClientService implements Runnable, ClientServiceInterface {
                     }
                     case UPDATE_BALANCE -> {
                         playerBalances.put(gameMessage.sender(), Integer.parseInt(gameMessage.content()));
-//                        gameGUI.getWindowSetting().updatePlayerBalance(gameMessage.sender(), Integer.parseInt(gameMessage.content()));
                     }
                     case SELL_TILE -> {
                         System.out.println("Клиент получил сообщения об продаже поля");
                         gameGUI.getWindowSetting().deleteTileOwner(gameMessage.content());
+                    }
+                    case NEXT_PLAYER -> {
+                        nowPlayer = gameMessage.sender();
+                        if (this.gameGUI != null){
+                            gameGUI.getWindowSetting().updatePlayerPosition(nowPlayer);
+                        }
                     }
                     default->{
                         System.err.println("Неизвестный тип сообщения: " + gameMessage.type());
@@ -209,6 +217,10 @@ public class ClientService implements Runnable, ClientServiceInterface {
         return listPlayers;
     }
 
+    @Override
+    public String getNowPlayerName() {
+        return nowPlayer;
+    }
 
 
 }

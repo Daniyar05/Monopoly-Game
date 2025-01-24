@@ -14,16 +14,17 @@ import lombok.RequiredArgsConstructor;
 public class TileManager {
     private final EventManager eventManager;
     public void move(Tile tile, Player player) {
-        if (tile instanceof PropertyTile){
-            Player owner = ((PropertyTile) tile).getOwner();
+        if (tile instanceof PropertyTile propertyTile){
+            Player owner = propertyTile.getOwner();
             if (owner == null) {
+                sendCommandForMove(player.getName(), String.valueOf(tile.getPosition()));
                 EventEnum eventEnum = EventEnum.BUY_IT;
                 eventEnum.setPlayerName(player.getName());
-                if (player.enoughCash(((PropertyTile) tile).getCost()) & eventManager.choiceYes(eventEnum)){
+                if (player.enoughCash(propertyTile.getCost()) & eventManager.choiceYes(eventEnum)){
                     eventManager.notifyAboutAction("Buying tile", player.getName()); // FIXME - удалить
                     eventManager.sendCommand(new GameMessage(MessageType.NEW_TILE_OWNER, player.getName(), String.valueOf(tile.getPosition())));
 
-                    BuyingProperty buyingProperty = new BuyingProperty(player,((PropertyTile) tile).getCost(), (PropertyTile) tile);
+                    BuyingProperty buyingProperty = new BuyingProperty(player,propertyTile.getCost(), propertyTile);
                     buyingProperty.execute();
                     eventManager.sendCommand(new GameMessage(
                             MessageType.UPDATE_BALANCE,
@@ -35,7 +36,7 @@ public class TileManager {
                 }
             }else if (!player.equals(owner)){
                 PayingRent payingRent = new PayingRent(player);
-                owner.adjustCash(payingRent, ((PropertyTile) tile));
+                owner.adjustCash(payingRent, propertyTile);
                 eventManager.sendCommand(new GameMessage(
                         MessageType.UPDATE_BALANCE,
                         player.getName(),
@@ -46,6 +47,16 @@ public class TileManager {
                         owner.getName(),
                         String.valueOf(owner.getWallet().getAmount())
                 ));
+                eventManager.sendCommand(new GameMessage(
+                        MessageType.NOTIFICATION,
+                        player.getName(),
+                        "Вы попали на поле %s и уплатил $%s игроку %s".formatted(tile.getName(), payingRent.getCash().getAmount(), owner.getName())
+                ));
+                eventManager.sendCommand(new GameMessage(
+                        MessageType.NOTIFICATION,
+                        owner.getName(),
+                        "Игрок %s попал на ваше поле %s и уплатил $%s".formatted(player.getName(), tile.getName(), payingRent.getCash().getAmount())
+                ));
             }
         }
 
@@ -54,5 +65,11 @@ public class TileManager {
         }
     }
 
-
+    private void sendCommandForMove(String player, String position) {
+        eventManager.sendCommand(new GameMessage(
+                MessageType.PLAYER_MOVED,
+                player,
+                position
+        ));
+    }
 }

@@ -9,5 +9,6 @@ public enum MessageType {
     PLAYER_CHOICE,
     NOTIFICATION,
     UPDATE_BALANCE,
-    SELL_TILE
+    SELL_TILE,
+    NEXT_PLAYER
 }

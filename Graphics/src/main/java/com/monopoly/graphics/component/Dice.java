@@ -47,7 +47,7 @@ public class Dice {
         animationTimeline.setCycleCount(Timeline.INDEFINITE);
 
         diceCanvas.setOnMouseClicked(e -> {
-            if (animationTimeline.getStatus() == Animation.Status.RUNNING) {
+            if (animationTimeline.getStatus() == Animation.Status.RUNNING || !nickname.equals(clientService.getNowPlayerName())) {
                 return;
             }
 
