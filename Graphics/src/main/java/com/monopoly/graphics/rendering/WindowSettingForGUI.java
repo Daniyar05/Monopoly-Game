@@ -8,9 +8,6 @@ import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.service.ClientServiceInterface;
 import com.monopoly.graphics.component.Dice;
 import com.monopoly.graphics.util.ColorUtil;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,12 +19,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +34,8 @@ public class WindowSettingForGUI {
     private final String nickname;
     private Stage stage;
     private final Dice dice;
+    private double currentWidth;
+    private double currentHeight;
 
     // Карта позиций игроков (имя -> позиция)
     private final Map<String, Integer> playerPositions = new HashMap<>();
@@ -107,7 +101,7 @@ public class WindowSettingForGUI {
 
         grid.getColumnConstraints().clear();
         grid.getRowConstraints().clear();
-
+        grid.setPrefSize(currentWidth, currentHeight); // Фиксируем размеры сетки
         for (int i = 0; i < BOARD_SIZE; i++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
             if (i == 0 || i == BOARD_SIZE-1){
@@ -137,6 +131,9 @@ public class WindowSettingForGUI {
         Button button = new Button();
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         button.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+//        button.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+//        button.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
 
         button.setOnAction(e -> openTileDescription(tile));
         // Проверяем, куплена ли клетка
@@ -190,6 +187,7 @@ public class WindowSettingForGUI {
     }
 
     public void update(Stage primaryStage) {
+
         this.stage=primaryStage;
         BorderPane mainLayout = new BorderPane();
 
@@ -218,22 +216,37 @@ public class WindowSettingForGUI {
         primaryStage.setTitle("Monopoly Board");
         primaryStage.setMinWidth(500); // Минимальная ширина окна
         primaryStage.setMinHeight(500); // Минимальная высота окна
+//        primaryStage.setMaxWidth(WINDOW_SIZE); // Установите, если хотите зафиксировать размеры
+//        primaryStage.setMaxHeight(WINDOW_SIZE);
         primaryStage.setScene(scene);
+        currentWidth = scene.getWidth();
+        currentHeight = scene.getHeight();
+        scene.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            if (!newWidth.equals(currentWidth)) {
+                adjustLayout(grid, background, newWidth.doubleValue(), scene.getHeight());
+            }
+        });
 
-        scene.widthProperty().addListener((obs, oldWidth, newWidth) ->
-                adjustLayout(grid, background, newWidth.doubleValue(), scene.getHeight()));
-
-        scene.heightProperty().addListener((obs, oldHeight, newHeight) ->
-                adjustLayout(grid, background, scene.getWidth(), newHeight.doubleValue()));
+        scene.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            if (!newHeight.equals(currentHeight)) {
+                adjustLayout(grid, background, scene.getWidth(), newHeight.doubleValue());
+            }
+        });
         primaryStage.show();
     }
 
     private void adjustLayout(GridPane grid, ImageView background, double newWidth, double newHeight) {
         // Масштабируем фоновое изображение
-        background.setFitWidth(newWidth);
-        background.setFitHeight(newHeight);
-        settings(grid, newWidth, newHeight);
-
+        System.out.println(newHeight+" -=-=-=- "+newWidth);
+        currentWidth = newWidth;
+        currentHeight = newHeight;
+        background.setFitWidth(currentWidth);
+        background.setFitHeight(currentHeight);
+        settings(grid, currentWidth, currentHeight);
+        // Пересчитываем размеры всех кнопок
+        for (int i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+            updateButtonTile(i);
+        }
     }
 
     public void updatePlayerPosition(String playerName) {
@@ -266,8 +279,8 @@ public class WindowSettingForGUI {
 
     public void updateButtonTile(int tilePosition) {
         System.out.println("Обновлено поле "+tilePosition);
+
         int tilePositionActual = tilePosition%tileButtons.size();
-//        System.out.println(tilePosition);
         Button button = tileButtons.get(tilePositionActual);
         if (button == null) {
             System.err.println("Кнопка для позиции " + tilePositionActual + " не найдена!");
@@ -278,7 +291,6 @@ public class WindowSettingForGUI {
 
         // Проверяем, находятся ли игроки на этой клетке
         List<String> names = new ArrayList<>();
-//        StringBuilder playersOnTile = new StringBuilder();
         playerPositions.forEach((playerName, playerPosition) -> {
             if (playerPosition == tilePositionActual) {
                 names.add(playerName);
@@ -368,6 +380,7 @@ public class WindowSettingForGUI {
         fieldButton.setGraphic(stackPane);
 
         fieldButton.setText("");
+//        fieldButton.setPrefSize(currentWidth/BOARD_SIZE, currentHeight/BOARD_SIZE);
         fieldButton.setStyle("-fx-background-color: transparent;"); // Прозрачный фон
     }
 

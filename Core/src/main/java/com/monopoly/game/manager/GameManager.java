@@ -69,9 +69,9 @@ public class GameManager {
 
     private void moveFinish() {
         playerManager.nextPlayer();
-        if (checkGameOver()) {
-            stopGame();
-        }
+//        if (checkGameOver()) {
+//            stopGame();
+//        }
         notifyNextPlayer();
     }
 
