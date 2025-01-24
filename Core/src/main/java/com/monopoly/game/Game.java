@@ -1,6 +1,7 @@
 package com.monopoly.game;
 
 import com.monopoly.game.action.event.GameStatus;
+import com.monopoly.game.component.area.Tile;
 import com.monopoly.game.component.model.Player;
 import com.monopoly.game.config.ConfigurationGame;
 import com.monopoly.game.manager.*;
@@ -52,5 +53,14 @@ public class Game {
 
     public Player getNowPlayer() {
         return playerManager.nowPlayer();
+    }
+
+    public Player sellTile(String playerName, String tileName) {
+        return playerManager.deleteOwnerTile(playerName, tileName);
+    }
+
+    public int getPositionTileByName(String tileName) {
+        Tile tile = boardManager.getTileByName(tileName);
+        return tile.getPosition();
     }
 }

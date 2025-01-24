@@ -8,5 +8,6 @@ public enum MessageType {
     ROLL_DICE,
     PLAYER_CHOICE,
     NOTIFICATION,
-    UPDATE_BALANCE
+    UPDATE_BALANCE,
+    SELL_TILE
 }

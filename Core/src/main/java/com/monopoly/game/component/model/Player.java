@@ -22,6 +22,7 @@ public class Player {
     private int countSkipSteps=0;
     private List<PropertyTile> ownedProperties;
     private List<AbstractCard> cardList;
+    private boolean isBankrupt = false;
 
     public Player(String name, Cash cash) {
         this.name = name;
@@ -35,23 +36,6 @@ public class Player {
         countSkipSteps--;
     }
 
-//    public void move(int steps, Board board) {
-//        position = (position + steps) % board.getTiles().size();
-//        Tile thisTile = board.getTile(position);
-//        if (thisTile instanceof PropertyTile){
-//            if (this.equals(((PropertyTile) thisTile).getOwner())){
-//
-//            } else {
-//                PayingRent payingRent = new PayingRent(((PropertyTile) thisTile).getOwner());
-//                ((PropertyTile) thisTile).getOwner().adjustCash(payingRent, ((PropertyTile) thisTile));
-//            }
-//        } else if (thisTile instanceof StartTile) {
-//
-//        }
-//    }
-//
-
-
     public int changePosition(int step){
         position+=step;
         return position;
@@ -59,7 +43,7 @@ public class Player {
 
     public void adjustCash(AbstractPromissoryNote promissoryNote, PropertyTile thisTile) {
         promissoryNote.setPlayerTo(this);
-        promissoryNote.setCash((thisTile).getRent());
+        promissoryNote.setCash(thisTile.getRent());
         promissoryNote.execute();
     }
 
@@ -81,5 +65,22 @@ public class Player {
 
     public void addJailFreeCard() {
         hasJailFreeCard = true;
+    }
+
+    public boolean ownsFullGroup(int group) {
+        long ownedInGroup = ownedProperties.stream()
+                .filter(p -> p.getGroup() == group)
+                .count();
+
+        return switch(group) {
+            case 1, 2, 3, 4, 5, 6, 7, 8 -> ownedInGroup == 3; // Для обычных цветных групп
+            case 10 -> ownedInGroup == 4;                     // Железные дороги
+            case 11 -> ownedInGroup == 2;                     // Коммунальные предприятия
+            default -> false;
+        };
+    }
+    public void declareBankruptcy() {
+        this.isBankrupt = true;
+        ownedProperties.forEach(p -> p.setOwner(null));
     }
 }

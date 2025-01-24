@@ -181,6 +181,10 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         playerBalances.put(gameMessage.sender(), Integer.parseInt(gameMessage.content()));
 //                        gameGUI.getWindowSetting().updatePlayerBalance(gameMessage.sender(), Integer.parseInt(gameMessage.content()));
                     }
+                    case SELL_TILE -> {
+                        System.out.println("Клиент получил сообщения об продаже поля");
+                        gameGUI.getWindowSetting().deleteTileOwner(gameMessage.content());
+                    }
                     default->{
                         System.err.println("Неизвестный тип сообщения: " + gameMessage.type());
                     }

@@ -47,8 +47,12 @@ public class TileManager {
                         String.valueOf(owner.getWallet().getAmount())
                 ));
             }
-        } else {
+        }
+
+        else {
             tile.execute(player, eventManager);
         }
     }
+
+
 }

@@ -11,11 +11,13 @@ import com.monopoly.graphics.util.ColorUtil;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -210,7 +212,7 @@ public class WindowSettingForGUI {
         layeredPane.getChildren().add(grid);
         mainLayout.setCenter(layeredPane);
 
-        addPlayerInfoPanel(mainLayout, clientService.getPlayerBalances());
+//        addPlayerInfoPanel(mainLayout, clientService.getPlayerBalances());
 
         Scene scene = new Scene(mainLayout, WINDOW_SIZE, WINDOW_SIZE);
         primaryStage.setTitle("Monopoly Board");
@@ -259,6 +261,7 @@ public class WindowSettingForGUI {
     }
 
     public void updateButtonTile(int tilePosition) {
+        System.out.println("Обновлено поле "+tilePosition);
         int tilePositionActual = tilePosition%tileButtons.size();
 //        System.out.println(tilePosition);
         Button button = tileButtons.get(tilePositionActual);
@@ -301,24 +304,45 @@ public class WindowSettingForGUI {
         button.setStyle("-fx-background-color: transparent;"); // Прозрачная кнопка //  -fx-border-color: black; -fx-text-fill: black
     }
     private void setOwnerStyleForButton(Button fieldButton, Tile tile, String owner) {
-        // Создаём кнопку-круг для владельца
         fieldButton.setGraphic(null);
 
         Button ownerButton = new Button();
-        ownerButton.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + "; -fx-background-radius: 50%; -fx-border-radius: 50%;");
+        ownerButton.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner)
+                + "; -fx-background-radius: 50%; -fx-border-radius: 50%;");
         ownerButton.setPrefSize(20, 20); // Устанавливаем размер кнопки-круга
         ownerButton.setMaxSize(20, 20);
         ownerButton.setMinSize(20, 20);
 
-        // Добавляем обработчик клика для кнопки владельца
         ownerButton.setOnAction(e -> {
             e.consume();
+
+            // Создаем диалоговое окно
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Информация о владельце");
+            alert.setTitle("Управление собственностью");
             alert.setHeaderText("Поле: " + tile.getName());
-            alert.setContentText("Владелец: " + owner);
+
+            // Создаем контейнер с информацией
+            VBox vbox = new VBox(10);
+            vbox.getChildren().addAll(
+                    new Label("Владелец: " + owner),
+                    new Label("Стоимость: $" + ((PropertyTile)tile).getCost().getAmount())
+            );
+
+            // Добавляем кнопку продажи только для владельца
+            if (owner.equals(nickname)) {
+                Button sellButton = new Button("Продать собственность");
+                sellButton.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
+                sellButton.setOnAction(event -> {
+                    handleSellProperty(tile);
+                    alert.close();
+                });
+                vbox.getChildren().add(sellButton);
+            }
+
+            alert.getDialogPane().setContent(vbox);
             alert.showAndWait();
         });
+
 
         // Создаём StackPane для графики кнопки клетки
         StackPane stackPane;
@@ -328,8 +352,12 @@ public class WindowSettingForGUI {
             stackPane = new StackPane();
         }
 
+
+
         // Добавляем кнопку-круг в StackPane поверх основной кнопки
         if (!stackPane.getChildren().contains(ownerButton)) {
+//            stackPane.getChildren().add(rightButtons);
+//            StackPane.setAlignment(rightButtons, Pos.TOP_RIGHT);
             stackPane.getChildren().add(ownerButton);
             StackPane.setAlignment(ownerButton, Pos.TOP_RIGHT); // Размещаем кнопку-круг в верхнем правом углу
         }
@@ -342,120 +370,70 @@ public class WindowSettingForGUI {
         fieldButton.setStyle("-fx-background-color: transparent;"); // Прозрачный фон
     }
 
+    private void handleSellProperty(Tile tile) {
+        // Логика продажи
+        if (tile instanceof PropertyTile) {
 
-//    private void setOwnerStyleForButton(Button button, Tile tile, String owner) {
-//        button.setStyle("-fx-background-color: " + ColorUtil.getColorForUser(owner) + ";");
-//        button.setText(tile.getName() + "\n(Owner: " + owner + ")");
-//    }
+            // Возвращаем деньги владельцу
+            clientService.sendCommand(new GameMessage(
+                    MessageType.SELL_TILE,
+                    nickname,
+                    tile.getName()
+                    )
+            );
 
-//    private void setPlayerOnTileStyleForButton(Button button, String playerName) {
-//        button.setText(button.getText()+"\n[" + playerName + "]");
-//    }
-//private void setPlayerOnTileStyleForButton(Button button, List<String> playerNames) {
-//    // Проверяем, есть ли изображение для игрока
-//    if (playerNames == null || playerNames.isEmpty()) {
-//        return;
-//    }
-//    String tokenImagePath = playerPathToIco.get(playerName.trim());
-//    if (tokenImagePath == null) {
-//        System.err.println("Не удалось найти изображение для игрока: " + playerName);
-//        return;
-//    }
-//
-//    // Загружаем изображение фишки игрока
-//    ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
-//    playerToken.setFitWidth(30); // Устанавливаем размер фишки
-//    playerToken.setFitHeight(30);
-//
-//    // Добавляем всплывающее окно с информацией об игроке
-//    Tooltip tooltip = new Tooltip("Игрок: " + playerName + "\nБаланс: $" + playerBalances.getOrDefault(playerName, 0));
-//    Tooltip.install(playerToken, tooltip);
-//
-//    // Добавляем обработчик клика на фишку
-//    playerToken.setOnMouseClicked(e -> {
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Информация об игроке");
-//        alert.setHeaderText(playerName);
-//        alert.setContentText("Баланс: $" + playerBalances.getOrDefault(playerName, 0));
-//        alert.showAndWait();
-//    });
-//
-//    // Получаем или создаём StackPane для кнопки
-//    StackPane stackPane;
-//    if (button.getGraphic() instanceof StackPane) {
-//        stackPane = (StackPane) button.getGraphic();
-//    } else {
-//        stackPane = new StackPane();
-//        button.setGraphic(stackPane); // Устанавливаем StackPane как графику кнопки
-//    }
-//
-//    // Добавляем фишку игрока в StackPane
-//    stackPane.getChildren().add(playerToken);
-//    StackPane.setAlignment(playerToken, Pos.CENTER); // Размещаем фишку в центре кнопки
-//}
-private void setPlayerOnTileStyleForButton(Button button, List<String> playerNames) {
-    if (playerNames == null || playerNames.isEmpty()) {
-        return;
+
+            // Обновляем интерфейс
+//            update(stage);
+        }
     }
 
-    StackPane stackPane;
-    if (button.getGraphic() instanceof StackPane) {
-        stackPane = (StackPane) button.getGraphic();
-    } else {
-        stackPane = new StackPane();
-        button.setGraphic(stackPane);
-    }
-
-    // Очищаем предыдущие элементы, чтобы избежать дублирования
-//    stackPane.getChildren().clear();
-
-    // Добавляем фишки для всех игроков
-    int index = 0;
-    for (String playerName : playerNames) {
-        // Проверяем наличие изображения для игрока
-        String tokenImagePath = playerPathToIco.get(playerName.trim());
-        if (tokenImagePath == null) {
-            System.err.println("Не удалось найти изображение для игрока: " + playerName);
-            continue;
+    private void setPlayerOnTileStyleForButton(Button button, List<String> playerNames) {
+        if (playerNames == null || playerNames.isEmpty()) {
+            return;
         }
 
-        // Загружаем изображение фишки игрока
-        ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
-        playerToken.setFitWidth(20); // Устанавливаем размер фишки
-        playerToken.setFitHeight(20);
+        StackPane stackPane;
+        if (button.getGraphic() instanceof StackPane) {
+            stackPane = (StackPane) button.getGraphic();
+        } else {
+            stackPane = new StackPane();
+            button.setGraphic(stackPane);
+        }
 
-        setTooltipForPlayer(playerName, playerToken, stackPane);
+        int index = 0;
+        for (String playerName : playerNames) {
+            String tokenImagePath = playerPathToIco.get(playerName.trim());
+            if (tokenImagePath == null) {
+                System.err.println("Не удалось найти изображение для игрока: " + playerName);
+                continue;
+            }
+
+            // Загружаем изображение фишки игрока
+            ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
+            playerToken.setFitWidth(20); // Устанавливаем размер фишки
+            playerToken.setFitHeight(20);
+
+            setTooltipForPlayer(playerName, playerToken, stackPane);
 
 
-        // Определяем позиции для фишек на одной клетке
-        double[][] positions = {
-                {-20, -20}, {20, -20}, {-20, 20}, {20, 20}, // Для до четырёх игроков
-                {0, -20}, {0, 20}, {-20, 0}, {20, 0}        // Дополнительные позиции
-        };
-        double xOffset = positions[index % positions.length][0];
-        double yOffset = positions[index % positions.length][1];
-        StackPane.setAlignment(playerToken, Pos.CENTER);
-        StackPane.setMargin(playerToken, new Insets(yOffset, 0, 0, xOffset)); // Смещение фишки
+            // Определяем позиции для фишек на одной клетке
+            double[][] positions = {
+                    {-20, -20}, {20, -20}, {-20, 20}, {20, 20}, // Для до четырёх игроков
+                    {0, -20}, {0, 20}, {-20, 0}, {20, 0}        // Дополнительные позиции
+            };
+            double xOffset = positions[index % positions.length][0];
+            double yOffset = positions[index % positions.length][1];
+            StackPane.setAlignment(playerToken, Pos.CENTER);
+            StackPane.setMargin(playerToken, new Insets(yOffset, 0, 0, xOffset)); // Смещение фишки
 
-        index++;
-    }
+            index++;
+        }
 }
 
     private void setTooltipForPlayer(String playerName, ImageView playerToken, StackPane stackPane){
-        // Добавляем всплывающее окно с информацией об игроке
         Tooltip tooltip = new Tooltip("Игрок: " + playerName + "\nБаланс: $" + clientService.getPlayerBalances().getOrDefault(playerName, 0));
         Tooltip.install(playerToken, tooltip);
-
-//        // Добавляем обработчик клика на фишку
-//        playerToken.setOnMouseClicked(e -> {
-//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//            alert.setTitle("Информация об игроке");
-//            alert.setHeaderText(playerName);
-//            alert.setContentText("Баланс: $" + playerBalances.getOrDefault(playerName, 0));
-//            alert.showAndWait();
-//        });
-
-        // Добавляем фишку в StackPane с расчётом позиции
         stackPane.getChildren().add(playerToken);
     }
 
@@ -466,38 +444,13 @@ private void setPlayerOnTileStyleForButton(Button button, List<String> playerNam
         alert.setTitle("Конец игры");
         alert.setHeaderText("Победитель: " + winner);
         alert.setContentText("Спасибо за игру!");
-        alert.showAndWait();
-    }
-
-    private void addPlayerInfoPanel(BorderPane mainLayout, Map<String, Integer> playerBalances) {
-        VBox playerInfoBox = new VBox();
-        playerInfoBox.setSpacing(10); // Отступы между элементами
-        playerInfoBox.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
-
-        playerBalances.forEach((playerName, balance) -> {
-            Button playerInfo = new Button(playerName + ": $" + balance);
-            playerInfo.setStyle("-fx-font-size: 14; -fx-background-color: transparent;");
-            playerInfo.setDisable(true); // Только для отображения
-            playerInfoBox.getChildren().add(playerInfo);
+        alert.setOnHidden(event -> {
+            stage.close();
+            Platform.exit();
         });
 
-        mainLayout.setRight(playerInfoBox); // Боковая панель справа
+        alert.showAndWait();
     }
-
-//    public void updatePlayerBalance(String playerName, int newBalance) {
-//        playerBalances.put(playerName, newBalance);
-//
-//        // Ищем кнопку баланса игрока и обновляем её текст
-//        VBox playerInfoBox = (VBox) stage.getScene().getRoot().lookup(".player-info-box"); // Селектор по стилю
-//        if (playerInfoBox != null) {
-//            for (javafx.scene.Node node : playerInfoBox.getChildren()) {
-//                if (node instanceof Button button && button.getText().startsWith(playerName)) {
-//                    button.setText(playerName + ": $" + newBalance);
-//                    break;
-//                }
-//            }
-//        }
-//    }
 
 
     public void updateTileOwner(GameMessage gameMessage) {
@@ -511,6 +464,12 @@ private void setPlayerOnTileStyleForButton(Button button, List<String> playerNam
         if (tile != null) {
             updateButtonTile(Integer.parseInt(gameMessage.content()));
         }
+    }
+    public void deleteTileOwner(String tilePosition){
+        Tile tile = TileConfigurator.getTileByPosition(Integer.parseInt(tilePosition));
+        tileOwners.remove(tile.getName());
+        updateButtonTile(tile.getPosition());
+
     }
 
 

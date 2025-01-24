@@ -10,10 +10,6 @@ public class JailTile extends Tile{
 
     @Override
     public void execute(Player player, EventManager eventManager) {
-//        if (player.getCountSkipSteps() > 0){
-//            player.reduceCountSkipSteps();
-//        } else {
-//            //TODO добавить реализацию
-//        }
+
     }
 }

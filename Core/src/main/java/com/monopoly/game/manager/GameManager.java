@@ -55,7 +55,7 @@ public class GameManager {
         }
         int newPositionPlayer = playerManager.move(step);
         int positionOnBoard = boardManager.move(newPositionPlayer, playerNow);
-        System.out.println(oldPositionPlayer+"--=-=-=-=-=-="+newPositionPlayer+"   "+boardManager.tileSize());
+//        System.out.println(oldPositionPlayer+"--=-=-=-=-=-="+newPositionPlayer+"   "+boardManager.tileSize());
         if (oldPositionPlayer % boardManager.tileSize() > newPositionPlayer % boardManager.tileSize()){
             playerNow.getWallet().addCash(new Cash(200));
             eventManager.sendCommand(new GameMessage(
@@ -70,15 +70,29 @@ public class GameManager {
 
     private void moveFinish() {
         playerManager.nextPlayer();
+//        checkGameOver();
     }
 
     public int rollDice(){
         return Dice.roll();
     }
+    private void checkGameOver() {
+        long activePlayers = playerManager.getPlayers().stream()
+                .filter(p -> !p.isBankrupt())
+                .count();
 
-
-//    private List<Player> players;           // Список игроков
-//    private Board board;                    // Игровое поле
-//    private int currentPlayerIndex;         // Индекс текущего игрока
-//    private GameStatus gameStatus;          // Текущий статус игры (WAITING, IN_PROGRESS, FINISHED)
+        if (activePlayers == 1) {
+            Player winner = playerManager.getPlayers().stream()
+                    .filter(p -> !p.isBankrupt())
+                    .findFirst()
+                    .orElseThrow();
+            eventManager.sendCommand(
+                    new GameMessage(
+                            MessageType.GAME_OVER,
+                            winner.getName(),
+                            "Победил - "+winner.getName()+" с суммой = "+winner.getWallet().getAmount()
+                    )
+            );
+        }
+    }
 }

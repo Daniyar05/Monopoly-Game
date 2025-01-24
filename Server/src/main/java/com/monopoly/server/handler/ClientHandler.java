@@ -1,5 +1,6 @@
 package com.monopoly.server.handler;
 
+import com.monopoly.game.component.model.Player;
 import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.message.MessageType.*;
@@ -111,6 +112,26 @@ public class ClientHandler implements Runnable {
                 case PLAYER_CHOICE -> {
                     System.out.println("Сервером получен ответ на PLAYER_CHOICE");
                     responseMap.put(message.sender(), message.content());
+                }
+                case SELL_TILE -> {
+                    System.out.println("Пользователь продает"+message.content());
+
+                    Player player = getGameManagerServer().sellTile(message.sender(), message.content());
+                    if (player == null) {
+                        return;
+                    }
+                    broadcast(new GameMessage(
+                            MessageType.UPDATE_BALANCE,
+                            player.getName(),
+                            String.valueOf(player.getWallet().getAmount())
+                    ).toString());
+
+                    broadcast(new GameMessage(
+                            MessageType.SELL_TILE,
+                            player.getName(),
+                            String.valueOf(getGameManagerServer().getPositionTileByName(message.content()))
+                    ).toString());
+
                 }
             }
         } else {

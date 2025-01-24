@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class BoardManager {
@@ -34,8 +35,20 @@ public class BoardManager {
         return player.getPosition();
     }
 
-    public void moveToJail(Player player){
-        //TODO реализовать
+    public void deleteOwnerTile(String playerName, String tileName) {
+
     }
 
+    public Tile getTileByName(String tileName) {
+        // Проверка инициализации доски
+        if (board == null || board.getTiles() == null) {
+            throw new IllegalStateException("Игровое поле не инициализировано");
+        }
+
+        // Поиск клетки с обработкой отсутствия
+        return board.getTiles().stream()
+                .filter(tile -> tileName != null && tileName.equals(tile.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Клетка '" + tileName + "' не найдена"));
+    }
 }
