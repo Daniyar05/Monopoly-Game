@@ -92,7 +92,6 @@ public class ClientHandler implements Runnable {
                 case PLAYER_MOVED -> {
                     System.out.println("Ход игрока: " + message.content());
                 }
-                case TILE_UPDATED, NEW_TILE_OWNER -> {}
 
                 case ROLL_DICE -> {
                     new Thread(() -> {

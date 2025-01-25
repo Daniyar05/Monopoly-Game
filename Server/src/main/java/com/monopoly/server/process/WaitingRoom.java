@@ -46,28 +46,20 @@ public class WaitingRoom {
             sendReadyStatus(true);
         });
 
-        Button notReadyButton = new Button("Не готов");
-        notReadyButton.setOnAction(e -> {
-            isReady = false;
-            statusLabel.setText("Ваш статус: Не готов");
-            onReadyChanged.accept(false);
-            sendReadyStatus(false);
-        });
 
-        HBox buttonBox = new HBox(10, readyButton, notReadyButton);
+        HBox buttonBox = new HBox(10, readyButton);
         buttonBox.setAlignment(Pos.CENTER);
 
         root.getChildren().addAll(title, statusLabel, buttonBox);
 
         if (isHost) {
             startGameButton = new Button("Начать игру");
-            startGameButton.setDisable(true); // Изначально отключена
+            startGameButton.setDisable(true);
             startGameButton.setOnAction(e -> {
-                sendStartGameCommand(); // Отправляем команду всем игрокам
+                sendStartGameCommand();
             });
             root.getChildren().add(startGameButton);
-            // Активировать кнопку при готовности всех игроков
-//            onReadyChanged = ready -> Platform.runLater(() -> startGameButton.setDisable(!ready));
+
         }
 
         Scene scene = new Scene(root, 400, 200);
@@ -79,7 +71,6 @@ public class WaitingRoom {
     }
 
     private void sendReadyStatus(boolean ready) {
-//        String command = "READY:" + nickname + ":" + ready;
 
         clientServiceCommandSender.accept(
                 new GameMessage(
@@ -92,9 +83,6 @@ public class WaitingRoom {
     }
 
     private void sendStartGameCommand() {
-        // Отправляем команду всем игрокам о старте игры
-//        for (String playerName : getPlayerNames()) {
-//        String command = "START_GAME:";// + playerName;
         clientServiceCommandSender.accept(new GameMessage(
                 PreparationMessageType.GAME_START,
                 nickname,
