@@ -30,7 +30,7 @@ public class Game {
 
     public int move(){
         if (GameStatus.WAITING.equals(gameStatus)){
-            System.out.println("Waiting for move in old function");
+            System.out.println("it is old function move");
             gameStatus = GameStatus.IN_PROGRESS;
             int position = gameManager.move();
             gameStatus=GameStatus.WAITING;

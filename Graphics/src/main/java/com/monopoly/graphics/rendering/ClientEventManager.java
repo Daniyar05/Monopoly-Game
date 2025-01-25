@@ -43,7 +43,7 @@ public class ClientEventManager implements EventManager {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Choice Dialog");
-                alert.setHeaderText("Make a Choice");
+                alert.setHeaderText("Запрос на приобретение");
                 alert.setContentText(question.getValue());
 
                 ButtonType yesButton = new ButtonType("Yes");

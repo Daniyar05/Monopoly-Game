@@ -42,6 +42,9 @@ public class GameManager {
 
     public int move(int step){
         Player playerNow = playerManager.nowPlayer();
+        if (playerNow.isCanBeBankrupt()){
+            moveFinish();
+        }
         int oldPositionPlayer = playerNow.getPosition();
         if (playerNow.getCountSkipSteps()>0){
             eventManager.sendCommand(new GameMessage(
@@ -69,9 +72,9 @@ public class GameManager {
 
     private void moveFinish() {
         playerManager.nextPlayer();
-//        if (checkGameOver()) {
-//            stopGame();
-//        }
+        if (checkGameOver()) {
+            stopGame();
+        }
         notifyNextPlayer();
     }
 

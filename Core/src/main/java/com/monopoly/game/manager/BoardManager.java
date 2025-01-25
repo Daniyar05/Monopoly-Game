@@ -28,7 +28,7 @@ public class BoardManager {
 
     public int move(int position, Player player) {
         Tile tile = board.getTile(position);
-        eventManager.notifyAboutAction("Move on BoardManager - "+tile.getPosition(), player.getName());
+//        eventManager.notifyAboutAction("Move on BoardManager - "+tile.getPosition(), player.getName());
         tileManager.move(tile, player);
         return player.getPosition();
     }

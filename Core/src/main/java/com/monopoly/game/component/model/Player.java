@@ -73,7 +73,7 @@ public class Player {
                 .count();
 
         return switch(group) {
-            case 1, 2, 3, 4, 5, 6, 7, 8 -> ownedInGroup == 3; // Для обычных цветных групп
+            case 1, 2, 3, 4, 5, 6, 7, 8 -> ownedInGroup == 3; // обычные групп
             case 10 -> ownedInGroup == 4;                     // Железные дороги
             case 11 -> ownedInGroup == 2;                     // Коммунальные предприятия
             default -> false;
@@ -82,5 +82,12 @@ public class Player {
     public void declareBankruptcy() {
         this.isBankrupt = true;
         ownedProperties.forEach(p -> p.setOwner(null));
+    }
+    public boolean isCanBeBankrupt(){
+        if (wallet.getAmount()<=0){
+            declareBankruptcy();
+            return true;
+        }
+        return false;
     }
 }

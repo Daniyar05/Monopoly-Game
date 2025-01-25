@@ -33,10 +33,10 @@ public class ChanceTile extends Tile {
     @Override
     public void execute(Player player, EventManager eventManager) {
         if (!chanceCards.isEmpty()) {
-            ChanceCard card = chanceCards.remove(0); // Берем верхнюю карту
+            ChanceCard card = chanceCards.remove(0);
             System.out.println("Шанс: " + card.getDescription());
             card.executeEffect(player, eventManager);
-            chanceCards.add(card); // Возвращаем карту в конец колоды
+            chanceCards.add(card);
         }
     }
 }

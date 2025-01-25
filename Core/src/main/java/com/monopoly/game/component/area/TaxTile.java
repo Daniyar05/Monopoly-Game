@@ -7,8 +7,8 @@ import lombok.Getter;
 
 @Getter
 public class TaxTile extends Tile {
-    private final int fixedTax; // Фиксированная сумма налога
-    private final double percentageTax; // Процент от состояния (например, 10% -> 0.10)
+    private final int fixedTax;
+    private final double percentageTax;
 
 
     public TaxTile(int position, String name, int fixedTax, double percentageTax) {
