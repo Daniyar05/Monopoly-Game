@@ -92,12 +92,8 @@ public class ClientHandler implements Runnable {
                 case PLAYER_MOVED -> {
                     System.out.println("Ход игрока: " + message.content());
                 }
-                case TILE_UPDATED -> {
-                    String playerName = message.sender();
-                }
-                case NEW_TILE_OWNER -> {
-                    message.content();
-                }
+                case TILE_UPDATED, NEW_TILE_OWNER -> {}
+
                 case ROLL_DICE -> {
                     new Thread(() -> {
                         int position = getGameManagerServer().move(message.sender(), Integer.parseInt(message.content()));
@@ -137,7 +133,6 @@ public class ClientHandler implements Runnable {
         } else {
             System.err.println("Неизвестный тип сообщения: " + message.type());
         }
-//        System.out.println("END");
     }
 
     public void sendMessage(String message) {

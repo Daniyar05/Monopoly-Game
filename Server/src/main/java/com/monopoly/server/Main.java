@@ -1,12 +1,10 @@
 package com.monopoly.server;
 
-import com.monopoly.graphics.GameGUI;
 import com.monopoly.server.message.GameManagerServer;
 import com.monopoly.server.process.WaitingRoom;
 import com.monopoly.server.services.ClientService;
 import com.monopoly.server.services.ServerService;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
@@ -31,13 +29,13 @@ public class Main extends Application {
         boolean isHost = showConfirmDialog("Вы хотите стать хостом?", "Роль в игре");
 
         if (isHost) {
-            initializeHost(primaryStage, nickname);
+            initializeHost(nickname);
         } else {
-            initializeClient(primaryStage, nickname);
+            initializeClient(nickname);
         }
     }
 
-    private void initializeHost(Stage primaryStage, String nickname) {
+    private void initializeHost(String nickname) {
         ServerService serverService = new ServerService(port);
         new Thread(serverService).start();
         gameManagerServer.setServerService(serverService);
@@ -45,14 +43,10 @@ public class Main extends Application {
         ClientService clientService = new ClientService("127.0.0.1", port, nickname, waitingRoomStage);
         new Thread(clientService).start();
 
-//        gameManagerServer.addPlayer(nickname);
 
         WaitingRoom waitingRoom = new WaitingRoom(
                 true,
                 ready -> System.out.println("Игрок изменил статус готовности: " + ready),
-                ()->toString(),
-
-//                () -> startGame(gameManagerServer, nickname),
                 nickname,
                 clientService::sendCommand
         );
@@ -60,12 +54,10 @@ public class Main extends Application {
         waitingRoom.start(waitingRoomStage);
     }
 
-    private void initializeClient(Stage primaryStage, String nickname) {
+    private void initializeClient(String nickname) {
         String hostIp = showInputDialog("Введите IP хоста:", "IP Адрес");
         if (hostIp == null || hostIp.isBlank()) {
             hostIp="127.0.0.1";
-//            showError("IP адрес не может быть пустым. Программа завершена.");
-//            return;
         }
 
         Stage waitingRoomStage = new Stage();
@@ -73,13 +65,10 @@ public class Main extends Application {
         new Thread(clientService).start();
 
 
-//        gameManagerServer.addPlayer(nickname);
 
         WaitingRoom waitingRoom = new WaitingRoom(
                 false,
                 ready -> System.out.println("Игрок изменил статус готовности: " + ready),
-//                () -> startGame(gameManagerServer, nickname),
-                ()->toString(),
                 nickname,
                 command -> clientService.sendCommand(command)
         );
@@ -87,17 +76,6 @@ public class Main extends Application {
         waitingRoom.start(waitingRoomStage);
     }
 
-//    private void startGame(GameManagerServer gameManagerServer, String nickname) {
-//        Platform.runLater(() -> {
-//            System.out.println("created startGame - "+nickname);
-//            GameGUI gameGUI = new GameGUI(gameManagerServer.getGame(), nickname);
-//            try {
-//                gameGUI.start(new Stage());
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 
     private String showInputDialog(String message, String title) {
         TextInputDialog dialog = new TextInputDialog();

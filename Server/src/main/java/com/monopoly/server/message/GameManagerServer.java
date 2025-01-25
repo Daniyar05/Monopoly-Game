@@ -9,12 +9,10 @@ import com.monopoly.game.from_Server.message.GameMessage;
 import com.monopoly.game.from_Server.message.MessageType;
 import com.monopoly.game.from_Server.message.PreparationMessageType;
 import com.monopoly.graphics.rendering.EventManagerGUI;
-import com.monopoly.server.services.ClientService;
 import com.monopoly.server.services.ServerService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalInt;
 
 import static com.monopoly.server.services.ServerService.getPlayerNames;
 
@@ -34,7 +32,6 @@ public class GameManagerServer {
     }
 
     public void startGame() {
-//        ServerService.broadcast(new GameMessage(PreparationMessageType.GAME_START, getPlayerNames(),"").toString());
         if (game == null) {
             EventManagerGUI eventManager = new EventManagerGUI(serverService);
             this.game = new Game(ConfigurationGame.builder()

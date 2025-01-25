@@ -18,16 +18,14 @@ public class WaitingRoom {
     private boolean isReady = false;
     private final boolean isHost;
     private Consumer<Boolean> onReadyChanged;
-    private final Runnable onStartGame;
     private final String nickname;
     private final Consumer<GameMessage> clientServiceCommandSender;
     private Button startGameButton;
 
-    public WaitingRoom(boolean isHost, Consumer<Boolean> onReadyChanged, Runnable onStartGame,
+    public WaitingRoom(boolean isHost, Consumer<Boolean> onReadyChanged,
                        String nickname, Consumer<GameMessage> clientServiceCommandSender) {
         this.isHost = isHost;
         this.onReadyChanged = onReadyChanged;
-        this.onStartGame = onStartGame;
         this.nickname = nickname;
         this.clientServiceCommandSender = clientServiceCommandSender;
     }

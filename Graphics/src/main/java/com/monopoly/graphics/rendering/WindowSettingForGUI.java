@@ -214,14 +214,12 @@ public class WindowSettingForGUI {
         currentHeight = scene.getHeight();
         scene.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             if (!newWidth.equals(currentWidth)) {
-                System.out.println("currentWidth");
                 adjustLayout(grid, background, newWidth.doubleValue(), scene.getHeight());
             }
         });
 
         scene.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             if (!newHeight.equals(currentHeight)) {
-                System.out.println("currentHeight");
                 adjustLayout(grid, background, scene.getWidth(), newHeight.doubleValue());
             }
         });
@@ -256,7 +254,7 @@ public class WindowSettingForGUI {
 
 
     public void updateButtonTile(int tilePosition) {
-        System.out.println("Обновлено поле "+tilePosition);
+//        System.out.println("Обновлено поле "+tilePosition);
 
         int tilePositionActual = tilePosition%tileButtons.size();
         Button button = tileButtons.get(tilePositionActual);
@@ -389,7 +387,6 @@ public class WindowSettingForGUI {
             playerToken.setFitHeight(i);
 
             if (playerName.equals(clientService.getNowPlayerName())) {
-                System.out.println("This personal is move - "+playerName);
                 playerToken.setStyle("-fx-effect: dropshadow(gaussian, green, 25, 0, 0, 0);");
             }
 

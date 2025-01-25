@@ -27,10 +27,6 @@ public class ServerService implements Runnable, ServerServiceInterface {
 
     public static final Map<String, String> responseMap = new HashMap<>();
 
-    public void delete(String playerName) {
-        responseMap.remove(playerName);
-    }
-
     public ServerService(int port) {
         try {
             this.serverSocket = new ServerSocket(port);
@@ -77,15 +73,4 @@ public class ServerService implements Runnable, ServerServiceInterface {
         responseMap.remove(username);
         return response;
     }
-
-//    public void sendRequestToClient(String clientName, GameMessage message) {
-//        for (ClientHandler client : clients) {
-//
-//            if (client.getNickname().equals(clientName)) {
-//                client.sendMessage(message.toString());
-//                break;
-//            }
-//        }
-//    }
-
 }

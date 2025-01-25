@@ -32,10 +32,9 @@ public class ClientService implements Runnable, ClientServiceInterface {
     private final String nickname;
     private final Stage primaryStage;
     private GameGUI gameGUI;
-    private final BlockingQueue<Boolean> responseQueue = new ArrayBlockingQueue<>(1);
     private ClientEventManager clientEventManager;
     private List<String> listPlayers;
-    private Map<String, Integer> playerBalances = new HashMap<>(); // Добавьте данные о деньгах игроков
+    private Map<String, Integer> playerBalances = new HashMap<>(); // данные о деньгах игроков
     private String nowPlayer;
     private final Stage stage=new Stage();
 
@@ -97,7 +96,6 @@ public class ClientService implements Runnable, ClientServiceInterface {
                 case GAME_START -> {
                     System.out.println("Получил сообщение от сервера о старте игры");
                     closeWaitingRoom();
-
                     startGame();
                 }
                 case GET_ALL_PLAYERS -> {
@@ -123,7 +121,6 @@ public class ClientService implements Runnable, ClientServiceInterface {
         GameMessage gameMessage = GameMessage.fromString(message);
 
         Platform.runLater(() -> {
-            // Обработка различных типов обновлений
             if (gameMessage.type() instanceof MessageType prepType) {
                 switch (prepType) {
                     case PLAYER_MOVED ->{
