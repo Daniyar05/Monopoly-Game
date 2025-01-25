@@ -16,7 +16,7 @@ public class Dice {
     private final int TILE_SIZE;
     private final ClientServiceInterface clientService;
     private final String nickname;
-    private Canvas diceCanvas; // Canvas для рисования кубика
+    private Canvas diceCanvas;
     private Timeline animationTimeline;
 
     public Dice(int TILE_SIZE, ClientServiceInterface clientService, String nickname) {
@@ -26,17 +26,14 @@ public class Dice {
     }
 
     public void createAnimatedDice(GridPane grid, int x, int y) {
-        // Инициализируем Canvas для рисования кубика
         diceCanvas = new Canvas(TILE_SIZE, TILE_SIZE);
         GraphicsContext gc = diceCanvas.getGraphicsContext2D();
 
-        // Загружаем изображения граней кубика
         Image[] diceImages = new Image[6];
         for (int i = 1; i <= 6; i++) {
             diceImages[i - 1] = new Image(getClass().getResourceAsStream("/dice" + i + ".png"));
         }
 
-        // Рисуем изначальное состояние кубика (грань "1")
         drawDiceFace(gc, diceImages[0]);
 
         // Анимация смены граней кубика
@@ -69,15 +66,10 @@ public class Dice {
     }
 
     private void drawDiceFace(GraphicsContext gc, Image diceFace) {
-        // Очищаем Canvas
         gc.clearRect(0, 0, TILE_SIZE, TILE_SIZE);
-
-        // Рисуем границу кубика
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
         gc.strokeRect(0, 0, TILE_SIZE, TILE_SIZE);
-
-        // Рисуем изображение грани кубика
         gc.drawImage(diceFace, 5, 5, TILE_SIZE - 10, TILE_SIZE - 10);
     }
 }

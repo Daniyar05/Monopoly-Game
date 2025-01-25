@@ -15,14 +15,10 @@ public class EventManagerGUI implements EventManager {
 
     @Override
     public boolean choiceYes(EventEnum question) {
-
-        // Отправляем запрос клиенту
         GameMessage gameMessage = new GameMessage(MessageType.PLAYER_CHOICE, question.getFrom(), question.getValue());
-        serverService.sendCommandForOneClient(gameMessage); // Value передавать имя пользователя
+        serverService.sendCommandForOneClient(gameMessage);
 
-        // Ждем ответа от клиента
         while (!serverService.hasResponse(question.getFrom())) {
-
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -31,14 +27,13 @@ public class EventManagerGUI implements EventManager {
             }
         }
 
-        // Возвращаем результат
         boolean result = Boolean.valueOf(serverService.getResponse(question.getFrom()));
         return result;
     }
 
     @Override
     public void notifyAboutAction(String message, String username) {
-        serverService.sendCommandForOneClient(new GameMessage(MessageType.NOTIFICATION, username, message)); // message изменить
+        serverService.sendCommandForOneClient(new GameMessage(MessageType.NOTIFICATION, username, message));
     }
 
     @Override

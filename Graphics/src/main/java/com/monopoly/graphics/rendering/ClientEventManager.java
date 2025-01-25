@@ -26,8 +26,8 @@ public class ClientEventManager implements EventManager {
     private final String nickname;
     private final Stage stage;
     private final Queue<Runnable> taskQueue = new LinkedList<>();
-    private boolean isTaskActive = false; // Флаг, указывающий на выполнение текущей задачи
-    private final Object lock = new Object(); // Объект для синхронизации потоков
+    private boolean isTaskActive = false;
+    private final Object lock = new Object();
 
     public ClientEventManager(PrintWriter out, String nickname, Stage stage) {
         this.out = out;
@@ -59,7 +59,6 @@ public class ClientEventManager implements EventManager {
             });
         });
 
-        // Ждём завершения задачи
         synchronized (resultHolder) {
             try {
                 while (!isTaskActive) {

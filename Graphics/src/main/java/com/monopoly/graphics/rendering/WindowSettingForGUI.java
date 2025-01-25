@@ -384,7 +384,7 @@ public class WindowSettingForGUI {
             }
 
             ImageView playerToken = new ImageView(new Image(getClass().getResourceAsStream(tokenImagePath)));
-            int i = 30; // Размер фишки
+            int i = 30;
             playerToken.setFitWidth(i);
             playerToken.setFitHeight(i);
 
@@ -395,15 +395,13 @@ public class WindowSettingForGUI {
 
             setTooltipForPlayer(playerName, playerToken, stackPane);
 
-
-            // Определяем позиции для фишек на одной клетке
             double[][] positions = {
                     {-i, -i}, {i, -i}, {-i, i}, {i, i} // Для до четырёх игроков
             };
             double xOffset = positions[index % positions.length][0];
             double yOffset = positions[index % positions.length][1];
             StackPane.setAlignment(playerToken, Pos.CENTER);
-            StackPane.setMargin(playerToken, new Insets(yOffset, 0, 0, xOffset)); // Смещение фишки
+            StackPane.setMargin(playerToken, new Insets(yOffset, 0, 0, xOffset));
 
             index++;
         }
