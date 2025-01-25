@@ -59,8 +59,10 @@ public class WindowSettingForGUI {
     private void addPathToIcoForAllPlayer() {
         List<String> tokenPaths = List.of(
                 "/pieces/Car.jpg",
-                "/pieces/Cat.jpg"
-//                "/pieces/Hat.jpg"
+                "/pieces/Cat.jpg",
+                "/pieces/Base1.jpg",
+                "/pieces/Base2.jpg"
+
         );
         for (int i = 0; i < playersNames.size(); i++) {
             String playerName = playersNames.get(i);

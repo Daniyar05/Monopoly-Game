@@ -21,7 +21,7 @@ public class TileManager {
                 EventEnum eventEnum = EventEnum.BUY_IT;
                 eventEnum.setPlayerName(player.getName());
                 if (player.enoughCash(propertyTile.getCost()) & eventManager.choiceYes(eventEnum)){
-                    eventManager.notifyAboutAction("Buying tile", player.getName()); // FIXME - удалить
+                    eventManager.notifyAboutAction("Вы купили "+propertyTile.getName(), player.getName());
                     eventManager.sendCommand(new GameMessage(MessageType.NEW_TILE_OWNER, player.getName(), String.valueOf(tile.getPosition())));
 
                     BuyingProperty buyingProperty = new BuyingProperty(player,propertyTile.getCost(), propertyTile);
@@ -32,7 +32,7 @@ public class TileManager {
                             String.valueOf(player.getWallet().getAmount())
                     ));
                 } else {
-                    eventManager.notifyAboutAction("Вы отказались покупать ", player.getName()); // FIXME - удалить
+                    eventManager.notifyAboutAction("Вы отказались покупать "+propertyTile.getName(), player.getName());
                 }
             }else if (!player.equals(owner)){
                 PayingRent payingRent = new PayingRent(player);
