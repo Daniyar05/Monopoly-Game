@@ -129,9 +129,7 @@ public class ClientService implements Runnable, ClientServiceInterface {
                         }
                     }
 
-                    case TILE_UPDATED->{
-                        gameGUI.getWindowSetting().updateTileState(gameMessage.content());
-                    }
+
                     case NEW_TILE_OWNER->{
                         gameGUI.getWindowSetting().updateTileOwner(gameMessage);
                     }

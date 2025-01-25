@@ -15,4 +15,9 @@ public abstract class Tile {
     }
 
     public void execute(Player player, EventManager eventManager) {}
+
+    public String getDescription(){
+        return name;
+    }
+
 }

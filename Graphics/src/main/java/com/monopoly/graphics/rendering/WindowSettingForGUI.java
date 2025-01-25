@@ -135,7 +135,6 @@ public class WindowSettingForGUI {
 
 
         button.setOnAction(e -> openTileDescription(tile));
-        // Проверяем, куплена ли клетка
         String owner = tileOwners.get(tile.getName());
         List<String> names = new ArrayList<>();
         playerPositions.forEach((playerName, position) -> {
@@ -181,7 +180,7 @@ public class WindowSettingForGUI {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Tile Description");
         alert.setHeaderText(tile.getName());
-        alert.setContentText("Description: " + tile.getName());
+        alert.setContentText("Информация: " + tile.getDescription());
         alert.showAndWait();
     }
 
@@ -338,15 +337,12 @@ public class WindowSettingForGUI {
             stackPane = new StackPane();
         }
 
-
-
         if (!stackPane.getChildren().contains(ownerButton)) {
             stackPane.getChildren().add(ownerButton);
             StackPane.setAlignment(ownerButton, Pos.TOP_RIGHT);
         }
 
         fieldButton.setGraphic(stackPane);
-
         fieldButton.setText("");
         fieldButton.setStyle("-fx-background-color: transparent;");
     }
@@ -404,15 +400,13 @@ public class WindowSettingForGUI {
 
             index++;
         }
-}
+    }
 
     private void setTooltipForPlayer(String playerName, ImageView playerToken, StackPane stackPane){
         Tooltip tooltip = new Tooltip("Игрок: " + playerName + "\nБаланс: $" + clientService.getPlayerBalances().getOrDefault(playerName, 0));
         Tooltip.install(playerToken, tooltip);
         stackPane.getChildren().add(playerToken);
     }
-
-
 
     public void displayGameOver(String winner) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -438,19 +432,16 @@ public class WindowSettingForGUI {
             updateButtonTile(Integer.parseInt(gameMessage.content()));
         }
     }
+
     public void deleteTileOwner(String tilePosition){
         Tile tile = TileConfigurator.getTileByPosition(Integer.parseInt(tilePosition));
         tileOwners.remove(tile.getName());
         updateButtonTile(tile.getPosition());
-
     }
 
 
     private void registerPlayerPath(String playerName, String tokenImagePath) {
         playerPathToIco.put(playerName, tokenImagePath);
-    }
-
-    public void updateTileState(String content) {
     }
 
 }

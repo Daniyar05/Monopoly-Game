@@ -23,5 +23,9 @@ public class PropertyTile extends Tile{
     public Cash getRent() {
         return owner.ownsFullGroup(group) ? new Cash(rent.getAmount() * 2) : rent;
     }
+    public String getDescription(){
+        return "\nСтоимость - $"+cost.getAmount()+
+                "\nРента - $"+rent.getAmount();
+    }
 
 }
